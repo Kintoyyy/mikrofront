@@ -22,6 +22,7 @@ import {
 import { ToasterComponent } from "@coreui/angular";
 import { AppToastComponent } from "../toast-simple/toast.component";
 import { TimeZones } from "./timezones-data";
+import { error } from "console";
 
 @Component({
   templateUrl: "settings.component.html",
@@ -75,6 +76,7 @@ export class SettingsComponent implements OnInit {
   public SysConfigloading: boolean = true;
 
   public ConfirmModalVisible: boolean = false;
+  public DeleteConfirmModalVisible: boolean = false;
   public rows: any = [];
   public Selectedrows: any;
   public updateBehavior: string = "keep";
@@ -83,7 +85,7 @@ export class SettingsComponent implements OnInit {
   public available_firmwares: any = [];
   public available_firmwaresv6: any = [];
   public sysconfigs: any = [];
-
+  public currentFirm:any = [];
   toasterForm = {
     autohide: true,
     delay: 3000,
@@ -130,7 +132,28 @@ export class SettingsComponent implements OnInit {
     this.initFirmsTable();
     this.initsettings();
   }
+  delete_fimrware(firm:any,del:boolean=false) {
+    var _self = this;
+    _self.currentFirm=firm;
+    if(del){
+      this.data_provider.delete_firm(this.currentFirm.id).then((res) => {
+        if (res.status == true){
+          _self.DeleteConfirmModalVisible=false;
+          _self.initFirmsTable();
+        }
+        else if ('err' in res){
+          _self.show_toast(
+            "Firmware Delete",
+            res.err,
+            "danger"
+          );
+        }
+      });
+    }
+    else
+      _self.DeleteConfirmModalVisible=true;
 
+  }
   start_download() {
     var _self = this;
     this.loading = true;

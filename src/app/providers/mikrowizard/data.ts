@@ -463,6 +463,13 @@ export class dataProvider {
         return this.MikroWizardRPC.sendJsonRequest("/api/firmware/get_firms", data);
     }
 
+    delete_firm(id:number){
+        var data={
+            'id':id
+        }
+        return this.MikroWizardRPC.sendJsonRequest("/api/firmware/delete_from_repository", data);
+    }
+    
     get_backups(data:any) {
         return this.MikroWizardRPC.sendJsonRequest("/api/backup/list", data);
     }

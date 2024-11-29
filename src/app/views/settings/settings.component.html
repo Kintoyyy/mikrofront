@@ -21,6 +21,12 @@
                 {{value}}
               </ng-template>
             </gui-grid-column>
+            <gui-grid-column header="Actions" width="120" field="action">
+              <ng-template let-value="item.id" let-item="item" let-index="index">
+                <button cButton color="danger" size="sm" (click)="delete_fimrware(item);"><i
+                    class="fa-regular fa-trash-can"></i></button>
+              </ng-template>
+            </gui-grid-column>
           </gui-grid>
         </c-input-group>
 
@@ -229,4 +235,22 @@
   </c-modal-footer>
 </c-modal>
 
+<c-modal #DeleteConfirmModal backdrop="static" [(visible)]="DeleteConfirmModalVisible" id="DeleteConfirmModal">
+  <c-modal-header>
+    <h6 cModalTitle>Delete Firmware from Repo</h6>
+    <button [cModalToggle]="DeleteConfirmModal.id" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    Are you sure that You want to Delete Firmware {{currentFirm.version}}/{{currentFirm.architecture}}?
+    <br />
+  </c-modal-body>
+  <c-modal-footer>
+    <button  (click)="delete_fimrware(currentFirm,true)" cButton color="danger">
+      Yes,Delete.
+    </button>
+    <button [cModalToggle]="DeleteConfirmModal.id" cButton color="info">
+      No.
+    </button>
+  </c-modal-footer>
+</c-modal>
 <c-toaster position="fixed" placement="top-end"></c-toaster>

@@ -39,7 +39,6 @@ export class DevicesComponent implements OnInit, OnDestroy {
   public tz: string;
   public ispro:boolean=false;
 
-
   constructor(
     private data_provider: dataProvider,
     private route: ActivatedRoute,

@@ -181,9 +181,11 @@ export class BackupsComponent implements OnInit {
 			}
 		});
 	}
+	
 	toggleCollapse(): void {
 		this.filters_visible = !this.filters_visible;
 	}
+
 	restore_backup(apply:boolean=false){
 		var _slef=this;
 		if (!apply){
@@ -209,6 +211,7 @@ export class BackupsComponent implements OnInit {
 			});
 		}
 	}
+
 	start_compare(){
 		var _self=this;
 		this.comparecontents=[]

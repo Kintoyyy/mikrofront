@@ -59,9 +59,7 @@
                 <input (ngModelChange)="reinitgrid('ip',$event)" [(ngModel)]="filters['ip']" matInput>
               </mat-form-field>
             </c-col>
-
           </div>
-
         </c-row>
         <gui-grid [rowDetail]="rowDetail" [source]="source" [columnMenu]="columnMenu" [paging]="paging"
           [sorting]="sorting" [infoPanel]="infoPanel" [autoResizeWidth]=true>
