@@ -250,6 +250,9 @@ export class DefaultLayoutComponent implements OnInit {
     }, 60000);
     
   }
-  clearTimer() { clearInterval(this.timer); }
+  clearTimer() {
+     clearInterval(this.timer); 
+     this.ConfirmModalVisible = false;
+    }
   
 }
