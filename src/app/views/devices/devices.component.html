@@ -265,12 +265,11 @@
 
 <c-modal #ExecutedDataModal backdrop="static" size="xl" [(visible)]="ExecutedDataModalVisible" id="ExecutedDataModal">
   <c-modal-header>
-    <h5 cModalTitle>Editing Group </h5>
+    <h5 cModalTitle>Scan History : </h5>
     <button (click)="ExecutedDataModalVisible=!ExecutedDataModalVisible" cButtonClose></button>
   </c-modal-header>
   <c-modal-body>
     <c-input-group class="mb-3">
-      <h5>Group Members :</h5>
       <gui-grid [autoResizeWidth]="true" *ngIf="ExecutedDataModalVisible" [searching]="searching"
         [source]="ExecutedData" [columnMenu]="columnMenu" [sorting]="sorting" [infoPanel]="infoPanel"
        [autoResizeWidth]=true
@@ -283,8 +282,8 @@
           <ng-template let-value="item['start_ip']" let-item="item" let-index="index">
             &nbsp; {{value}} </ng-template>
         </gui-grid-column>
-        <gui-grid-column header="End ip" field="start_ip">
-          <ng-template let-value="item['start_ip']" let-item="item" let-index="index">
+        <gui-grid-column header="End ip" field="end_ip">
+          <ng-template let-value="item['end_ip']" let-item="item" let-index="index">
             &nbsp; {{value}} </ng-template>
         </gui-grid-column>
         <gui-grid-column   header="End time" field="end">

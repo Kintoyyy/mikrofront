@@ -159,12 +159,11 @@
 
 <c-modal #ExecutedDataModal backdrop="static" size="lg" [(visible)]="ExecutedDataModalVisible" id="ExecutedDataModal">
   <c-modal-header>
-    <h5 cModalTitle>Editing Group </h5>
+    <h5 cModalTitle>Exec history </h5>
     <button (click)="ExecutedDataModalVisible=!ExecutedDataModalVisible" cButtonClose></button>
   </c-modal-header>
   <c-modal-body>
     <c-input-group class="mb-3">
-      <h5>Group Members :</h5>
       <gui-grid [autoResizeWidth]="true" *ngIf="ExecutedDataModalVisible" [searching]="searching"
         [source]="ExecutedData" [columnMenu]="columnMenu" [sorting]="sorting" [infoPanel]="infoPanel"
        [autoResizeWidth]=true

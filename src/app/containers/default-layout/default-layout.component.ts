@@ -6,6 +6,7 @@ import { navItems } from './_nav';
 import { dataProvider } from '../../providers/mikrowizard/data';
 import { arch } from 'os';
 import { DomSanitizer } from '@angular/platform-browser';
+import { disconnect } from 'process';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,11 +24,14 @@ export class DefaultLayoutComponent implements OnInit {
   public ispro: boolean=false;
   public action: string="password";
   public UserProfileModalVisible:boolean;
+  public ConfirmModalVisible:boolean;
   public error:any=false;
   public currentStep:number=1;
   public qrCode:any=false;
   public totpCode:string='';
   public errorMessage:any=false;
+  public data:any={};
+  public timer:any;
   public password:any={
     'cupass':'',
     'pass1':'',
@@ -130,7 +134,41 @@ export class DefaultLayoutComponent implements OnInit {
     else
       this.UserProfileModalVisible = true;
   }
-
+  show_confirm_modal(data:any){
+    this.data={};
+    if (data.action=='CancelTask'){
+      this.action=data.action;
+      this.data=data.data;
+      console.dir(this.data);
+      console.dir(this.action);
+      //disable submit button
+      this.data['SubmitDisable']=false;
+      this.ConfirmModalVisible = true;
+    }
+    if (data.action=='update'){
+      this.action='update';
+      this.data={};
+      this.ConfirmModalVisible = true;
+    }
+  }
+  ConfirmAction(){
+    var _self=this;
+    if(this.action=='CancelTask'){
+      this.data_provider.stop_task(this.data['signal']).then(res => {
+        //disable submit button
+        if(res['status']=='success'){
+          setTimeout(function () {
+            _self.ConfirmModalVisible = false;
+          }, 5000);
+        }
+        this.data['SubmitDisable']=true;
+        //wait 5 seconds before hiding the modal
+      })
+    }
+    if(this.action=='update'){
+       window.location.href = window.location.href.replace(/#.*$/, '')
+    }
+  }
   submit(){
     var _self=this;
     if(!_self.passvalid['pass2']){
@@ -190,12 +228,28 @@ export class DefaultLayoutComponent implements OnInit {
       }
       });
     });
-    _self.data_provider.get_front_version().then((res:any) => {
-      if(res['version']!=this.version){
-        console.dir("New version is available. Please refresh the page.");
-        window.location.href = window.location.href.replace(/#.*$/, '');
-      }
-		});
+    // check first time after 10 seconds
+    setTimeout(function(){
+      _self.data_provider.get_front_version().then((res:any) => {
+        if(res['version']!=_self.version){
+          console.log("New version is available. Please refresh the page.");
+          _self.show_confirm_modal({action:'update'});
+          // window.location.href = window.location.href.replace(/#.*$/, '');
+        }
+      });
+    }, 10000);
+    // check for new version every 5 seconds
+    this.timer=setInterval(function(){
+        _self.data_provider.get_front_version().then((res:any) => {
+          if(res['version']!=_self.version){
+            console.log("New version is available. Please refresh the page.");
+            _self.show_confirm_modal({action:'update'});
+            // window.location.href = window.location.href.replace(/#.*$/, '');
+          }
+        });
+    }, 60000);
+    
   }
+  clearTimer() { clearInterval(this.timer); }
   
 }

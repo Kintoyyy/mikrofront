@@ -14,6 +14,9 @@ export class DashboardComponent implements OnInit {
   public uname: string;
   public tz: string;
   public copy_msg: any = false;
+  public ConfirmModalVisible: boolean = false;
+  public action: string = "";
+  front_version=require('../../../../package.json').version;
   constructor(
     private data_provider: dataProvider,
     private router: Router,
@@ -41,7 +44,9 @@ export class DashboardComponent implements OnInit {
     trafficRadio: new UntypedFormControl("5m"),
   });
   public chart_data: any = {};
-  Chartoptions = {
+
+  public Chartoptions = {
+    responsive: true,
     plugins: {
       tooltip: {
         callbacks: {
@@ -87,17 +92,17 @@ export class DashboardComponent implements OnInit {
         stacked: true,
         position: "left",
         type: "linear",
-        color: "#17522f",
+        color: "#4caf50",
         grid: {
-          color: "rgba(23, 82, 47, 0.3)",
+          color: "rgba(76, 175, 79, 0.3)",
           backgroundColor: "transparent",
-          borderColor: "#f86c6b",
-          pointHoverBackgroundColor: "#f86c6b",
+          borderColor: "#4caf50",
+          pointHoverBackgroundColor: "#4caf50",
           borderWidth: 1,
           borderDash: [8, 5],
         },
         ticks: {
-          color: "#17522f",
+          color: "#000000",
           callback: function (value: any, index: any, ticks: any) {
             const units = ["bit", "Kib", "Mib", "Gib", "Tib"];
             var res = value;
@@ -119,10 +124,10 @@ export class DashboardComponent implements OnInit {
         position: "right",
         type: "linear",
         grid: {
-          color: "rgba(23, 82, 47, 0.3)",
+          color: "rgba(255, 152, 0, 0.4)",
           backgroundColor: "transparent",
-          borderColor: "#f86c6b",
-          pointHoverBackgroundColor: "#f86c6b",
+          borderColor: "#ff9800",
+          pointHoverBackgroundColor: "#ff9800",
           borderWidth: 1,
           borderDash: [8, 5],
         },
@@ -130,7 +135,7 @@ export class DashboardComponent implements OnInit {
           width: 2,
         },
         ticks: {
-          color: "#171951",
+          color: "#000000",
           callback: function (value: any, index: any, ticks: any) {
             const units = ["bit", "Kib", "Mib", "Gib", "Tib"];
             var res = value;
@@ -147,7 +152,7 @@ export class DashboardComponent implements OnInit {
     elements: {
       line: {
         borderWidth: 1,
-        tension: 0.4,
+        tension: 0.1,
       },
       point: {
         radius: 2,
@@ -181,7 +186,7 @@ export class DashboardComponent implements OnInit {
   }
   initStats() {
     var _self = this;
-    this.data_provider.dashboard_stats(true).then((res) => {
+    this.data_provider.dashboard_stats(true,this.front_version).then((res) => {
       _self.stats = res;
     });
   }
@@ -199,5 +204,24 @@ export class DashboardComponent implements OnInit {
     this.trafficRadioGroup.setValue({ trafficRadio: value });
     this.delta = value;
     this.initTrafficChart();
+  }
+  showConfirmModal(action: string) {
+    this.action = action;
+    this.ConfirmModalVisible = true
+  }
+  ConfirmAction() {
+    var _self = this;
+      this.data_provider.apply_update(this.action).then((res) => {
+        if (res["status"]=='success') {
+          if (_self.action=='update_mikroman') {
+            _self.stats['update_inprogress']=true;
+          }
+          if (_self.action=='update_mikrofront') {
+            _self.stats['front_update_inprogress']=true;
+          }
+          _self.action="";
+          _self.ConfirmModalVisible = false;
+        }
+      });
   }
 }

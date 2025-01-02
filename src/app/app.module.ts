@@ -40,6 +40,7 @@ import {
   SidebarModule,
   TabsModule,
   UtilitiesModule,
+  TableModule,
   ModalModule
 } from '@coreui/angular';
 
@@ -85,7 +86,8 @@ export function loginStatusProviderFactory(provider: loginChecker) {
     CardModule,
     NgScrollbarModule,
     ModalModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    TableModule
   ],
   providers: [
     {

@@ -201,6 +201,14 @@ export class VaultComponent implements OnInit {
   get_passwords(){
     var _self=this;
     this.data_provider.get_passwords(this.filters).then((res) => {
+      if ("error" in res && res.error.indexOf("Unauthorized")) {
+        _self.show_toast(
+          "Error",
+          "You are not authorized to perform this action",
+          "danger"
+        );
+      }
+      else{
       _self.passwords=res.data.map((d: any) => {
         d.changed = formatInTimeZone(
           d.changed.split(".")[0] + ".000Z",
@@ -209,6 +217,7 @@ export class VaultComponent implements OnInit {
         );
         return d;
       });
+    }
     });
   }
 
@@ -216,8 +225,17 @@ export class VaultComponent implements OnInit {
     var _self=this;
     _self.password="";
     this.data_provider.reveal_password(devid,username).then((res) => {
+      if ("error" in res && res.error.indexOf("Unauthorized")) {
+        _self.show_toast(
+          "Error",
+          "You are not authorized to perform this action",
+          "danger"
+        );
+      }
+      else{
       _self.password=res.password;
       _self.PasswordModalVisible=true;
+      }
     });
   }
 
@@ -255,6 +273,14 @@ export class VaultComponent implements OnInit {
   get_vault_history(){
     var _self=this;
     this.data_provider.vault_history().then((res) => {
+      if ("error" in res && res.error.indexOf("Unauthorized")) {
+        _self.show_toast(
+          "Error",
+          "You are not authorized to perform this action",
+          "danger"
+        );
+      }
+      else{
       let index = 1;
       _self.vault_history=res.data.map((d: any) => {
         d.index = index;
@@ -275,6 +301,7 @@ export class VaultComponent implements OnInit {
         index += 1;
         return d;
         });
+      }
     });
   }
   

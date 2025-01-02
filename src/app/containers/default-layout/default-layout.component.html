@@ -21,7 +21,7 @@
 <!--main-->
 <div class="wrapper d-flex flex-column min-vh-100 bg-light dark:bg-transparent">
   <!--app-header-->
-  <app-default-header (UserModalEvent)="show_user_modal($event)" class="mb-2 d-print-none header header-sticky"
+  <app-default-header (UserModalEvent)="show_user_modal($event)" (ConfirmModalEvent)="show_confirm_modal($event)" class="mb-2 d-print-none header header-sticky"
     position="sticky" sidebarId="sidebar" />
   <!--app-body-->
   <div class="main-container body flex-grow-1 px-3" style="display: flex;">
@@ -102,6 +102,36 @@
     <button *ngIf="action=='password'" (click)="submit()" cButton color="primary">submit</button>
     <button *ngIf="currentStep==3"  (click)="otpwizard(3)" cButton color="success" >Submit</button>
     <button [cModalToggle]="UserProfileModal.id" cButton color="secondary">
+      Close
+    </button>
+  </c-modal-footer>
+</c-modal>
+
+
+<c-modal #ConfirmModal backdrop="static" size="lg" [(visible)]="ConfirmModalVisible" id="ConfirmModal">
+  <c-modal-header>
+    <h5 cModalTitle *ngIf="action=='CancelTask'">Please Confirm Stopping Background Task</h5>
+    <h5 cModalTitle *ngIf="action=='update'">Please Confirm Stopping Background Task</h5>
+    <button [cModalToggle]="ConfirmModal.id" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body >
+    <div *ngIf="action=='CancelTask'">
+      <p>Are you sure you want to stop the task <code style="padding: 0 !important;"><b>{{ data['name'] }}</b></code>?</p>
+    </div>
+    <div *ngIf="action=='CancelTask' && data['signal']!='130' && data['signal']!='140'">
+      <code>Stopping this task will cause reload of other background tasks</code>
+    </div>
+    <div *ngIf="action=='update'">
+      <code >Clear browser cache and Reload the page or hit Ctrl+F5 to load latest Mikrofront version</code>
+    </div>
+  </c-modal-body>
+  <c-modal-footer>
+    <button *ngIf="action!='update'" cButton (click)="ConfirmAction()" color="primary" [disabled]="data['SubmitDisable']"><i *ngIf="data['SubmitDisable']" class="fa-solid fa-spinner fa-spin"></i> submit</button>
+    <button *ngIf="action!='update'" [cModalToggle]="ConfirmModal.id" cButton color="secondary">
+    </button>
+
+    <button *ngIf="action=='update'" cButton (click)="ConfirmAction()" color="primary" ><i *ngIf="data['SubmitDisable']" class="fa-solid fa-spinner fa-spin"></i> Reload</button>
+    <button *ngIf="action=='update'" (click)="clearTimer()" cButton color="secondary">
       Close
     </button>
   </c-modal-footer>

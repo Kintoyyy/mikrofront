@@ -22,7 +22,6 @@ import {
 import { ToasterComponent } from "@coreui/angular";
 import { AppToastComponent } from "../toast-simple/toast.component";
 import { TimeZones } from "./timezones-data";
-import { error } from "console";
 
 @Component({
   templateUrl: "settings.component.html",
@@ -137,6 +136,14 @@ export class SettingsComponent implements OnInit {
     _self.currentFirm=firm;
     if(del){
       this.data_provider.delete_firm(this.currentFirm.id).then((res) => {
+        if ("error" in res && res.error.indexOf("Unauthorized")) {
+          _self.show_toast(
+            "Error",
+            "You are not authorized to perform this action",
+            "danger"
+          );
+        }
+        else{
         if (res.status == true){
           _self.DeleteConfirmModalVisible=false;
           _self.initFirmsTable();
@@ -148,6 +155,7 @@ export class SettingsComponent implements OnInit {
             "danger"
           );
         }
+      }
       });
     }
     else
@@ -160,6 +168,14 @@ export class SettingsComponent implements OnInit {
     this.data_provider
       .download_firmware_to_repository(this.firmtodownload)
       .then((res) => {
+        if ("error" in res && res.error.indexOf("Unauthorized")) {
+          _self.show_toast(
+            "Error",
+            "You are not authorized to perform this action",
+            "danger"
+          );
+        }
+        else{
         if (res.status == true) {
           // show toast that we are already downloading
           _self.show_toast(
@@ -177,6 +193,7 @@ export class SettingsComponent implements OnInit {
         }
         _self.ConfirmModalVisible = !_self.ConfirmModalVisible;
         _self.loading = false;
+      }
       });
   }
 
@@ -204,14 +221,34 @@ export class SettingsComponent implements OnInit {
         this.firmwaretoinstallv6
       )
       .then((res) => {
+        if ("error" in res && res.error.indexOf("Unauthorized")) {
+          _self.show_toast(
+            "Error",
+            "You are not authorized to perform this action",
+            "danger"
+          );
+        }
+        else{
         _self.initFirmsTable();
+        }
       });
   }
 
   saveSysSetting() {
     var _self = this;
     this.data_provider.save_sys_setting(this.sysconfigs).then((res) => {
-      _self.initsettings();
+      if ("error" in res && res.error.indexOf("Unauthorized")) {
+        _self.show_toast(
+          "Error",
+          "You are not authorized to perform this action",
+          "danger"
+        );
+      }
+      else{
+        _self.show_toast("Settings", "Settings saved", "success");
+        _self.initsettings();
+
+      }
     });
   }
 
@@ -244,6 +281,14 @@ export class SettingsComponent implements OnInit {
   initsettings(): void {
     var _self = this;
     this.data_provider.get_settings().then((res) => {
+      if ("error" in res && res.error.indexOf("Unauthorized")) {
+        _self.show_toast(
+          "Error",
+          "You are not authorized to perform this action",
+          "danger"
+        );
+      }
+      else{
       _self.sysconfigs = res.sysconfigs;
       _self.sysconfigs["default_user"]["value"] = "";
       _self.sysconfigs["default_password"]["value"] = "";
@@ -265,7 +310,23 @@ export class SettingsComponent implements OnInit {
           _self.sysconfigs["otp_force"]["value"]
         );
       }
+      //check if update_mode is in the sysconfigs
+      if ("update_mode" in _self.sysconfigs){
+        //convert string to json
+        _self.sysconfigs["update_mode"]["value"] = JSON.parse(_self.sysconfigs["update_mode"]["value"]);
+      }
+      else{
+        //create default update_mode and set mode to auto
+        _self.sysconfigs["update_mode"] = {
+          "value": {
+            "mode": "auto",
+            "update_back" : false,
+            "update_front" : false
+          }
+        }
+      }
       _self.SysConfigloading = false;
+    }
     });
   }
 

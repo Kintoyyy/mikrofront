@@ -70,9 +70,10 @@ export class dataProvider {
         }
         return this.MikroWizardRPC.sendJsonRequest("/api/user/change_password", data);
     }
-    dashboard_stats(versioncheck:boolean){
+    dashboard_stats(versioncheck:boolean,front_version:string){
         var data={
-            'versioncheck':versioncheck
+            'versioncheck':versioncheck,
+            'front_version':front_version
         }
         return this.MikroWizardRPC.sendJsonRequest("/api/dashboard/stats", data);
     }
@@ -537,7 +538,21 @@ export class dataProvider {
         return this.MikroWizardRPC.sendJsonRequest("/api/sysconfig/save_all", data);
     }
  
-
+    get_running_tasks(){
+        return this.MikroWizardRPC.sendJsonRequest("/api/tasks/list", {});
+    }
+    stop_task(signal:number){
+        var data={
+            'signal':signal
+        }
+        return this.MikroWizardRPC.sendJsonRequest("/api/tasks/stop", data);
+    }
+    apply_update(action:string){
+        var data={
+            'action':action
+        }
+        return this.MikroWizardRPC.sendJsonRequest("/api/sysconfig/apply_update", data);
+    }
     ////
     //// End api funcs
     ////

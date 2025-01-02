@@ -171,6 +171,14 @@ export class UserManagerComponent implements OnInit {
       }
       _self.SelectedUser["adminperms"] = _self.adminperms;
       this.data_provider.create_user(_self.SelectedUser).then((res) => {
+        if ("error" in res && res.error.indexOf("Unauthorized")) {
+          _self.show_toast(
+            "Error",
+            "You are not authorized to perform this action",
+            "danger"
+          );
+        }
+        else{
         if ("id" in res && !("status" in res)) {
           _self.initGridTable();
           this.EditTaskModalVisible = false;
@@ -178,6 +186,7 @@ export class UserManagerComponent implements OnInit {
           //show error
           _self.show_toast("Error", res.err, "danger");
         }
+      }
       });
     } else {
       if (_self.userperms.length > 0) {
@@ -187,8 +196,17 @@ export class UserManagerComponent implements OnInit {
       }
       _self.SelectedUser["adminperms"] = _self.adminperms;
       this.data_provider.edit_user(_self.SelectedUser).then((res) => {
+        if ("error" in res && res.error.indexOf("Unauthorized")) {
+          _self.show_toast(
+            "Error",
+            "You are not authorized to perform this action",
+            "danger"
+          );
+        }
+        else{
         _self.initGridTable();
         _self.EditTaskModalVisible = false;
+        }
       });
     }
     //
@@ -197,14 +215,32 @@ export class UserManagerComponent implements OnInit {
   editAddUser(item: any, action: string) {
     var _self = this;
     this.data_provider.get_perms(1, 1000, "").then((res) => {
+      if ("error" in res && res.error.indexOf("Unauthorized")) {
+        _self.show_toast(
+          "Error",
+          "You are not authorized to perform this action",
+          "danger"
+        );
+      }
+      else{
       _self.allPerms = res.map((x: any) => {
         return { id: x["id"], name: x.name };
       });
       _self.data_provider.get_devgroup_list().then((res) => {
+        if ("error" in res && res.error.indexOf("Unauthorized")) {
+          _self.show_toast(
+            "Error",
+            "You are not authorized to perform this action",
+            "danger"
+          );
+        }
+        else{
         _self.allDevGroups = res.map((x: any) => {
           return { id: x["id"], name: x.name };
         });
+      }
       });
+    }
     });
     if (action == "showadd") {
       this.userperms = [];
@@ -241,7 +277,6 @@ export class UserManagerComponent implements OnInit {
 
     this.data_provider.get_user_restrictions(this.SelectedUser["id"]).then((res) => {
       _self.userresttrictions = res;
-      console.log(_self.userresttrictions);
       _self.RestrictionsTaskModalVisible = true;
     });
   }
@@ -270,13 +305,23 @@ export class UserManagerComponent implements OnInit {
   }
   
   save_sec(){
+    var _self=this;
     this.data_provider.save_user_restrictions(this.SelectedUser.id,this.userresttrictions).then((res) => {
+      if ("error" in res && res.error.indexOf("Unauthorized")) {
+        _self.show_toast(
+          "Error",
+          "You are not authorized to perform this action",
+          "danger"
+        );
+      }
+      else{
       if('status' in res && res['status']=='success')
           this.RestrictionsTaskModalVisible = false;
       else if('status' in res && res['status']=='failed')
           this.show_toast("Error", res.err, "danger");
       else
           this.show_toast("Error", "Somthing went wrong", "danger");
+      }
     });
   }
   
@@ -289,9 +334,18 @@ export class UserManagerComponent implements OnInit {
         this.devgroup["id"]
       )
       .then((res) => {
+        if ("error" in res && res.error.indexOf("Unauthorized")) {
+          _self.show_toast(
+            "Error",
+            "You are not authorized to perform this action",
+            "danger"
+          );
+        }
+        else{
         _self.get_user_perms(_self.SelectedUser["id"]);
         _self.permission = 0;
         _self.devgroup = 0;
+        }
       });
   }
 
@@ -314,8 +368,17 @@ export class UserManagerComponent implements OnInit {
     } else {
       var _self = this;
       this.data_provider.delete_user(_self.SelectedUser["id"]).then((res) => {
+        if ("error" in res && res.error.indexOf("Unauthorized")) {
+          _self.show_toast(
+            "Error",
+            "You are not authorized to perform this action",
+            "danger"
+          );
+        }
+        else{
         _self.initGridTable();
         _self.DeleteConfirmModalVisible = false;
+        }
       });
     }
   }
@@ -329,8 +392,18 @@ export class UserManagerComponent implements OnInit {
   }
 
   confirm_delete_perm(item: any) {
+    var _self = this;
     this.data_provider.Delete_user_perm(item.id).then((res) => {
+      if ("error" in res && res.error.indexOf("Unauthorized")) {
+        _self.show_toast(
+          "Error",
+          "You are not authorized to perform this action",
+          "danger"
+        );
+      }
+      else{
       this.get_user_perms(this.SelectedUser["id"]);
+      }
     });
   }
   
@@ -344,11 +417,20 @@ export class UserManagerComponent implements OnInit {
     var pageSize = 10;
     var searchstr = "";
     this.data_provider.get_users(page, pageSize, searchstr).then((res) => {
+      if ("error" in res && res.error.indexOf("Unauthorized")) {
+        _self.show_toast(
+          "Error",
+          "You are not authorized to perform this action",
+          "danger"
+        );
+      }
+      else{
       _self.source = res.map((x: any) => {
         return x;
       });
       _self.SelectedUser = {};
       _self.loading = false;
+    }
     });
   }
 }

@@ -123,8 +123,9 @@ export class DeviceComponent implements OnInit, OnDestroy {
     type: GuiRowSelectionType.CHECKBOX,
     mode: GuiRowSelectionMode.MULTIPLE,
   };
-
   Chartoptions = {
+    responsive: true,
+    _self :this,
     plugins: {
       tooltip: {
         callbacks: {
@@ -164,7 +165,19 @@ export class DeviceComponent implements OnInit, OnDestroy {
     },
     maintainAspectRatio: true,
     scales: {
-      x: { display: false },
+      x: {
+        
+        title: {
+          display: true,
+          text: 'Time',
+          color: '#333',
+      },
+      ticks: {
+        autoSkip: true,
+        maxTicksLimit: 30,
+          color: '#333',
+      }
+      },
       yA: {
         display: true,
         stacked: true,
@@ -177,7 +190,9 @@ export class DeviceComponent implements OnInit, OnDestroy {
         },
         ticks: {
           color: "#17522f",
-          callback: function (value: any, index: any, ticks: any) {
+          callback: (value: any) => {
+            if(this.total_type=="pps")
+              return value + " pps";
             const units = ["bit", "Kib", "Mib", "Gib", "Tib"];
             var res = value;
             let unitIndex = 0;
@@ -206,7 +221,9 @@ export class DeviceComponent implements OnInit, OnDestroy {
         },
         ticks: {
           color: "#171951",
-          callback: function (value: any, index: any, ticks: any) {
+          callback: (value: any) =>{
+            if(this.total_type=="pps")
+              return value + " pps";
             const units = ["bit", "Kib", "Mib", "Gib", "Tib"];
             var res = value;
             let unitIndex = 0;
@@ -222,7 +239,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
     elements: {
       line: {
         borderWidth: 1,
-        tension: 0.4,
+        tension: 0.1,
       },
       point: {
         radius: 4,

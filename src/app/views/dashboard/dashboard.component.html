@@ -125,29 +125,72 @@
   </c-card-body>
 </c-card>
 <c-row>
-  <c-col xl="6" *ngIf="stats" lg="12" class="h-100" style="height: 160px!important;">
-    <c-widget-stat-b [title]="stats['version']" class="mb-1 h-100" value="Version">
+  <c-col xl="6" *ngIf="stats" lg="12" class="h-100" style="min-height: 160px!important;display: grid">
+    <c-card class="mb-1 p-1 h-100" style="padding-left: 5px!important;">
       <div class="my-1">
-        <code style="padding: 0!important;">Serial:</code> <small
-          style="background-color: #ccc;padding: 5px;border-radius: 5px;cursor: pointer;" (click)="copy_this()"
-          [cdkCopyToClipboard]="stats['serial']">{{ stats['serial'] }}</small>
-        <span *ngIf="copy_msg" style="color: #fff!important;" class="badge text-bg-success mx-1"><i
-            class="fa-solid fa-check"></i>Copy</span>
+        <h4 style="display: inline-block;">Version and Serial information</h4>
+
       </div>
       <div *ngIf="!stats['license']" class="my-1">
-        <c-badge color="danger">Not Registred OR Not internet access</c-badge>
+        <div style="display: inline-block;margin-right: 5px;">
+          <code style="padding: 0!important;">Serial:</code> <small
+            style="background-color: #ccc;padding: 5px;border-radius: 5px;cursor: pointer;" (click)="copy_this()"
+            [cdkCopyToClipboard]="stats['serial']">{{ stats['serial'] }}</small>
+          <span *ngIf="copy_msg" style="color: #fff!important;" class="badge text-bg-success"><i
+              class="fa-solid fa-check"></i>Copy</span>
+        </div>
+        <c-badge color="danger">Not Registred</c-badge>
         <a class="mx-1" target="_blank" href="http://MikroWizard.com">Learn how to register and get automatic
           updates!</a>
       </div>
-      <div *ngIf="stats['license']" class="my-1">
+      <div *ngIf="stats['license']=='connection_error'" class="my-1">
+        <c-badge class="mx-1" color="danger">Unable connect to server/Check server internet connection</c-badge>
+      </div>
+      <div *ngIf="stats['license']!='connection_error'" class="my-1">
+        <div style="display: inline-block;margin-right: 5px;">
+          <code style="padding: 0!important;">Serial:</code> <small
+            style="background-color: #ccc;padding: 5px;border-radius: 5px;cursor: pointer;" (click)="copy_this()"
+            [cdkCopyToClipboard]="stats['serial']">{{ stats['serial'] }}</small>
+          <span *ngIf="copy_msg" style="color: #fff!important;" class="badge text-bg-success mx-1"><i
+              class="fa-solid fa-check"></i>Copy</span>
+        </div>
         <c-badge color="success">Registred</c-badge>
         <c-badge class="mx-1" color="info">License Type : {{stats['license']}}</c-badge>
+        <c-badge *ngIf="stats['update_mode']!='auto'" color="info">Manual update</c-badge>
+        <c-badge *ngIf="stats['update_mode']=='auto'" color="info">Auto update</c-badge>
       </div>
-    </c-widget-stat-b>
+      <div *ngIf="stats['license']!='connection_error'" class="my-1">
+        <span style="font-size: 0.9rem; display: inline-block;margin-right: 5px"><c-badge
+            [color]="stats['update_available'] ? 'success' : 'secondary'"
+            style="margin: 0!important;padding: 8px;height: 27px;">Your Mikroman version : {{stats['version']}}
+          </c-badge>
+          <i class="fa-solid fa-spinner fa-spin" *ngIf="stats['update_inprogress']"></i>
+          <button cButton color="warning"
+            *ngIf="stats['update_mode']!='auto' && stats['update_available'] && !stats['update_inprogress']" size="sm"
+            (click)="showConfirmModal('update_mikroman')"
+            style="font-size: 0.75em;position: relative;left: -4px;top: 1px;border-top-left-radius: 0;border-bottom-left-radius: 0;height: 27px;"><i
+              class="fa-regular fa-hand-pointer fa-beat-fade"></i> Update availble </button>
+        </span>
+        <span style="font-size: 0.9rem; display: inline-block;"><c-badge
+            [color]="stats['front_update_available'] ? 'success' : 'secondary'" style="padding: 8px;height: 27px;"
+            color="secondary">Your Mikrofront version : {{front_version}}
+          </c-badge>
+          <i class="fa-solid fa-spinner fa-spin" *ngIf="stats['front_update_inprogress']"></i>
+          <button cButton color="warning"
+            *ngIf="stats['update_mode']!='auto' && stats['front_update_available'] && !stats['front_update_inprogress']"
+            size="sm" (click)="showConfirmModal('update_mikrofront')"
+            style="font-size: 0.75em;position: relative;left: -4px;top: 1px;border-top-left-radius: 0;border-bottom-left-radius: 0;height: 27px;"><i
+              class="fa-regular fa-hand-pointer fa-beat-fade"></i> Update availble </button>
+        </span>
+      </div>
+      <!-- <div *ngIf="stats['update_mode']!='auto'" class="my-1">
+        <button cButton color="warning" *ngIf="stats['update_available']" size="sm" style="font-size: 1em;"><i class="fa-regular fa-hand-pointer fa-beat-fade"></i> Update <strong>Mikroman</strong> and reload server</button>
+        <button cButton color="warning" *ngIf="stats['front_update_available']" size="sm" style="font-size: 1em;margin-left: 5px;"><i class="fa-regular fa-hand-pointer fa-beat-fade"></i> Update <strong>MikroFront</strong> and reload Page</button>
+      </div> -->
+    </c-card>
   </c-col>
-
-  <c-col xl="6" lg="12" class="h-100" style="height: 160px!important;">
-    <c-card class="mb-1 p-1 h-100" *ngIf="stats">
+  <c-col xl="6" lg="12" class="h-100" style="min-height: 160px!important;display: grid;">
+    <c-card class="h-100" *ngIf="stats" style="padding: 0!important;margin: 0!important;">
       <c-carousel [dark]="true" [animate]="false" [wrap]="false" [interval]="1000000">
         <c-carousel-indicators></c-carousel-indicators>
         <c-carousel-inner>
@@ -166,3 +209,37 @@
     </c-card>
   </c-col>
 </c-row>
+
+<c-modal #ConfirmModal backdrop="static" size="lg" [(visible)]="ConfirmModalVisible" id="ConfirmModal">
+  <c-modal-header>
+    <h5 cModalTitle *ngIf="action=='update_mikroman'">Please Confirm Mikroman Update</h5>
+    <h5 cModalTitle *ngIf="action=='update_mikrofront'">Please Confirm MikroFront Update</h5>
+    <button [cModalToggle]="ConfirmModal.id" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    <div *ngIf="action=='update_mikroman'">
+      <p>Are you sure you want to apply latest Mikroman Update <code
+          style="padding: 0 !important;"><b> ver {{ stats['latest_version'] }}</b></code>?</p>
+      <p>By updating Mikroman the MikroFront update is also get checked and applyed</p>
+      <p>If you made any special changes to configuration files or python files it will be removed automaticlaly</p>
+    </div>
+    <div *ngIf="action=='update_mikroman'">
+      <code style="padding: 0!important;">Applying the update will cause reload of the server couple of times</code>
+    </div>
+    <div *ngIf="action=='update_mikrofront'">
+      <p>Are you sure you want to apply latest MikroFront Update <code
+          style="padding: 0 !important;"><b> ver {{ stats['front_latest_version'] }}</b></code>?</p>
+    </div>
+    <div *ngIf="action=='update_mikrofront'">
+      <code style="padding: 0!important;">Applying the update will cause reload of the page,<br>
+        Also please make sure you have the latest Mikroman before updating MikroFront. 
+        Updating to latest MikroFront without getting latest Mikroman can cause problems</code>
+    </div>
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton (click)="ConfirmAction()" color="primary"> submit</button>
+    <button [cModalToggle]="ConfirmModal.id" cButton color="secondary">
+      Close
+    </button>
+  </c-modal-footer>
+</c-modal>

@@ -15,6 +15,7 @@ export class DefaultHeaderComponent extends HeaderComponent {
 
   @Input() sidebarId: string = "sidebar";
   @Output() UserModalEvent = new EventEmitter<any>();
+  @Output() ConfirmModalEvent = new EventEmitter<any>();
 
   public newMessages = new Array(4)
   public newTasks = new Array(5)
@@ -25,7 +26,9 @@ export class DefaultHeaderComponent extends HeaderComponent {
   public uname: string;
   public fname: string;
   public lname: string;
-  public UserProfileModalVisible : boolean = false;
+  public ConfirmModalVisible : boolean = false;
+  public tasks : any = [];
+  public timer : any;
 
   constructor(
     private classToggler: ClassToggleService,
@@ -53,7 +56,9 @@ export class DefaultHeaderComponent extends HeaderComponent {
   callParent(action:string): void {
     this.UserModalEvent.next(action);
   }
-
+  callParentConfirm(action:string,data:any): void {
+    this.ConfirmModalEvent.next({action:action,data:data});
+  }
   logout() {
     this.data_provider.logout().then(res => {
       this.router.navigate(['login']);
@@ -62,6 +67,27 @@ export class DefaultHeaderComponent extends HeaderComponent {
 
   ngOnInit(): void {
     var _self = this;
+    console.log('DefaultHeaderComponent');
     this.get_user_info();
+    this.data_provider.get_running_tasks().then(res => {
+      _self.tasks = res['tasks'].filter((x:any) => x.status);
+    })
+    // get running tasks every 5 seconds
+    this.timer=setInterval(function(){
+      _self.get_running_tasks();
+    }, 5000);
   }
+  
+  get_running_tasks(){
+    var _self = this;
+    this.data_provider.get_running_tasks().then(res => {
+      _self.tasks = res['tasks'].filter((x:any) => x.status);
+    })
+  }
+  ngOnDestroy(): void {
+    clearInterval(this.timer);
+  }
+
+
+
 }

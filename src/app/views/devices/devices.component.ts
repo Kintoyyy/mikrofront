@@ -194,7 +194,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
     this.selected_device = dev;
     this.data_provider.get_editform(dev.id).then((res) => {
       if ("error" in res) {
-        if (res.error.indexOf("Unauthorized")) {
+        if ("error" in res && res.error.indexOf("Unauthorized")) {
           _self.show_toast(
             "Error",
             "You are not authorized to perform this action",
@@ -230,8 +230,17 @@ export class DevicesComponent implements OnInit, OnDestroy {
     var _self = this;
     this.ConfirmModalVisible = false;
     this.data_provider.delete_devices(this.Selectedrows).then((res) => {
+      if ("error" in res && res.error.indexOf("Unauthorized")) {
+        _self.show_toast(
+          "Error",
+          "You are not authorized to perform this action",
+          "danger"
+        );
+      }
+      else{
       _self.show_toast("Success", "Device Deleted", "success");
       this.initGridTable();
+      }
     });
   }
 
@@ -314,6 +323,14 @@ export class DevicesComponent implements OnInit, OnDestroy {
             });
         }
       }
+      if ("error" in res && res.error.indexOf("Unauthorized")) {
+        _self.show_toast(
+          "Error",
+          "You are not authorized to perform this action",
+          "danger"
+        );
+      }
+      else
       _self.scanwizard_step = step;
     });
   }
@@ -357,11 +374,20 @@ export class DevicesComponent implements OnInit, OnDestroy {
     this.data_provider
       .check_firmware(this.Selectedrows.toString())
       .then((res) => {
+        if ("error" in res && res.error.indexOf("Unauthorized")) {
+          _self.show_toast(
+            "Error",
+            "You are not authorized to perform this action",
+            "danger"
+          );
+        }
+        else{
         _self.show_toast("info", "Checking Firmwares", "light");
         _self.ConfirmModalVisible = false;
         setTimeout(function () {
           if (_self.Selectedrows.length < 1) _self.initGridTable();
         }, 1);
+      }
       });
   }
 
@@ -370,8 +396,16 @@ export class DevicesComponent implements OnInit, OnDestroy {
     this.data_provider
       .update_firmware(this.Selectedrows.toString())
       .then((res) => {
+        if ("error" in res && res.error.indexOf("Unauthorized")) {
+          _self.show_toast(
+            "Error",
+            "You are not authorized to perform this action",
+            "danger"
+          );
+        }
+        else{
         _self.show_toast("info", "Updating Firmwares Sent", "light");
-        _self.initGridTable();
+        _self.initGridTable();}
       });
   }
 
@@ -380,8 +414,17 @@ export class DevicesComponent implements OnInit, OnDestroy {
     this.data_provider
       .upgrade_firmware(this.Selectedrows.toString())
       .then((res) => {
+        if ("error" in res && res.error.indexOf("Unauthorized")) {
+          _self.show_toast(
+            "Error",
+            "You are not authorized to perform this action",
+            "danger"
+          );
+        }
+        else{
         _self.show_toast("info", "Upgrading Firmwares", "light");
         _self.initGridTable();
+        }
       });
   }
 
@@ -390,19 +433,37 @@ export class DevicesComponent implements OnInit, OnDestroy {
     this.data_provider
       .reboot_devices(this.Selectedrows.toString())
       .then((res) => {
+        if ("error" in res && res.error.indexOf("Unauthorized")) {
+          _self.show_toast(
+            "Error",
+            "You are not authorized to perform this action",
+            "danger"
+          );
+        }
+        else{
         _self.show_toast("info", "Reboot sent", "light");
         _self.ConfirmModalVisible = !_self.ConfirmModalVisible;
         _self.initGridTable();
+        }
       });
   }
 
   get_groups() {
     var _self = this;
     this.data_provider.get_devgroup_list().then((res) => {
+      if ("error" in res && res.error.indexOf("Unauthorized")) {
+        _self.show_toast(
+          "Error",
+          "You are not authorized to perform this action",
+          "danger"
+        );
+      }
+      else{
       if( "status" in res && res.status == 'failed' )
         _self.groups = false
       else
         _self.groups = res;
+  }
     });
   }
 
@@ -417,6 +478,14 @@ export class DevicesComponent implements OnInit, OnDestroy {
     };
 
     _self.data_provider.get_dev_list(data).then((res) => {
+      if ("error" in res && res.error.indexOf("Unauthorized")) {
+        _self.show_toast(
+          "Error",
+          "You are not authorized to perform this action",
+          "danger"
+        );
+      }
+      else{
       _self.source = res.map((x: any) => {
         if (x.upgrade_availble) _self.upgrades.push(x);
         if (x.update_availble) _self.updates.push(x);
@@ -424,6 +493,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
       });
       _self.device_interval();
       _self.loading = false;
+    }
     });
   }
 
@@ -516,8 +586,17 @@ export class DevicesComponent implements OnInit, OnDestroy {
     _self.selected_device['editform']['password']="Loading ...";
     if (_self.ispro && !this.show_pass){
       _self.data_provider.get_device_pass(this.selected_device['id']).then((res) => {
+        if ("error" in res && "error" in res && res.error.indexOf("Unauthorized")) {
+          _self.show_toast(
+            "Error",
+            "You are not authorized to perform this action",
+            "danger"
+          );
+        }
+        else{
         _self.selected_device['editform']['password']=res['password'];
         this.show_pass=!this.show_pass;
+      }
       });
     }
     else{
@@ -530,7 +609,14 @@ export class DevicesComponent implements OnInit, OnDestroy {
     this.data_provider
     .scan_results()
     .then((res) => {
-      console.dir(res);
+      if ("error" in res && res.error.indexOf("Unauthorized")) {
+        _self.show_toast(
+          "Error",
+          "You are not authorized to perform this action",
+          "danger"
+        );
+      }
+      else{
       let index = 1;
       _self.ExecutedData= res.data.map((d: any) => {
         d.index = index;
@@ -551,6 +637,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
         index += 1;
         return d;
         });
+      }
     });
     }
 

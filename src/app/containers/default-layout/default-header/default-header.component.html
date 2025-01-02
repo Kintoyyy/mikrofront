@@ -49,6 +49,7 @@
       </c-nav-item>
     </c-header-nav> -->
     <c-header-nav class="ms-3">
+      <ng-container *ngTemplateOutlet="taskDropdown"></ng-container> | 
       <ng-container *ngTemplateOutlet="userDropdown"></ng-container>
     </c-header-nav>
 
@@ -97,3 +98,45 @@
     </ul>
   </c-dropdown>
 </ng-template>
+
+<ng-template #taskDropdown>
+  <c-dropdown alignment="end" variant="nav-item">
+    <button
+      cButton
+      color=""
+      [caret]="false"
+      cDropdownToggle
+      class="py-0"
+      style="margin-right: 20px;"
+    >
+    <i class="fa-solid fa-gear"></i><c-badge color="danger" style="left: unset !important;" position="bottom-end" shape="rounded-pill">{{tasks.length}}</c-badge>
+    </button>
+    <ul cDropdownMenu class="pt-0 pr-5 w-auto">
+      <li>
+        <h6 cDropdownHeader class="bg-light fw-semibold py-2">Runnig Background Tasks</h6>
+      </li>
+      <li>
+        <table cTable small style="min-width: 250px;">
+          <thead style="font-size: 0.9rem;">
+          <tr>
+            <th scope="col"></th>
+            <th scope="col" style="color: darkgrey;">Task name</th>
+            <th scope="col" style="width: 60px;"></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let task of tasks; let i = index">
+            <th scope="row">{{i+1}}</th>
+            <td>{{task.name}}</td>
+            <td>
+              <!-- <button (click)="stop_task(task['signal'])" cButton  variant="ghost" color="danger" size="sm" ><i class="fa-solid fa-stop"></i></button> -->
+              <button (click)="callParentConfirm('CancelTask',task)"  cButton  variant="ghost" color="danger" size="sm" ><i class="fa-solid fa-stop"></i></button>
+            </td>
+          </tbody>
+        </table>
+      </li>
+    </ul>
+  </c-dropdown>
+</ng-template>
+
+

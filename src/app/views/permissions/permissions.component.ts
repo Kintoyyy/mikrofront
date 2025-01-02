@@ -225,17 +225,26 @@ export class PermissionsComponent implements OnInit {
     } else {
       var _self = this;
       this.data_provider.delete_perm(_self.SelectedPerm["id"]).then((res) => {
-        if (res["status"] == "failed") {
+        if ("error" in res && res.error.indexOf("Unauthorized")) {
           _self.show_toast(
             "Error",
-            res.err,
+            "You are not authorized to perform this action",
             "danger"
           );
-          return;
         }
         else{
-          _self.initGridTable();
-          _self.DeleteConfirmModalVisible = false;
+            if (res["status"] == "failed") {
+              _self.show_toast(
+                "Error",
+                res.err,
+                "danger"
+              );
+              return;
+            }
+            else{
+              _self.initGridTable();
+              _self.DeleteConfirmModalVisible = false;
+            }
         }
       });
     }

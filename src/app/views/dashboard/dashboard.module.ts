@@ -11,6 +11,7 @@ import {
   ProgressModule,
   TemplateIdDirective,
   BadgeModule,
+  ModalModule,
   CarouselModule,
 } from "@coreui/angular";
 
@@ -37,6 +38,7 @@ import { ClipboardModule } from "@angular/cdk/clipboard";
     CarouselModule,
     BadgeModule,
     ClipboardModule,
+    ModalModule,
   ],
   declarations: [DashboardComponent],
 })
