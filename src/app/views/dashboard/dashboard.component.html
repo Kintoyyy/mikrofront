@@ -144,6 +144,13 @@
           updates!</a>
       </div>
       <div *ngIf="stats['license']=='connection_error'" class="my-1">
+        <div style="display: inline-block;margin-right: 5px;">
+          <code style="padding: 0!important;">Serial:</code> <small
+            style="background-color: #ccc;padding: 5px;border-radius: 5px;cursor: pointer;" (click)="copy_this()"
+            [cdkCopyToClipboard]="stats['serial']">{{ stats['serial'] }}</small>
+          <span *ngIf="copy_msg" style="color: #fff!important;" class="badge text-bg-success mx-1"><i
+              class="fa-solid fa-check"></i>Copy</span>
+        </div>
         <c-badge class="mx-1" color="danger">Unable connect to server/Check server internet connection</c-badge>
       </div>
       <div *ngIf="stats['license']!='connection_error'" class="my-1">
