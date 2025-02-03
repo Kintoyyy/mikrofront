@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit ,ViewEncapsulation} from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { dataProvider } from "../../providers/mikrowizard/data";
 import { loginChecker } from "../../providers/login_checker";
 import {
+  GuiSearching,
   GuiInfoPanel,
   GuiColumn,
   GuiColumnMenu,
@@ -34,13 +35,20 @@ type radiodata = {
 @Component({
   templateUrl: "device.component.html",
   styleUrls: ["device.component.scss"],
+  encapsulation: ViewEncapsulation.None,
 })
 export class DeviceComponent implements OnInit, OnDestroy {
   public uid: number;
+  public sessionloaded: boolean = false;
   public uname: string;
   public tz: string;
   public ispro: boolean = false;
-
+  public small_screen=false;
+  public show_dev_logs: boolean = false; 
+  public show_auth_logs: boolean = false;
+  public show_acc_logs: boolean = false;
+  public actice_tab_index: number = 0;
+  public reloading: boolean = false;
   constructor(
     private data_provider: dataProvider,
     private route: ActivatedRoute,
@@ -58,8 +66,8 @@ export class DeviceComponent implements OnInit, OnDestroy {
       _self.uname = res.name;
       _self.tz = res.tz;
       _self.ispro = res.ISPRO;
+      _self.sessionloaded = true;
       const userId = _self.uid;
-
       if (res.role != "admin") {
         setTimeout(function () {
           _self.router.navigate(["/user/dashboard"]);
@@ -87,6 +95,9 @@ export class DeviceComponent implements OnInit, OnDestroy {
   public interface_rate: any = {};
   public options: any;
   public is_radio: boolean = false;
+  public dhcp_server_available: boolean = false;
+  public dhcp_server_data: any = {};
+  
   public sorting = {
     enabled: true,
     multiSorting: true,
@@ -95,8 +106,8 @@ export class DeviceComponent implements OnInit, OnDestroy {
   public paging: GuiPaging = {
     enabled: true,
     page: 1,
-    pageSize: 10,
-    pageSizes: [5, 10, 25, 50],
+    pageSize: 20,
+    pageSizes: [20],
     display: GuiPagingDisplay.ADVANCED,
   };
 
@@ -117,12 +128,18 @@ export class DeviceComponent implements OnInit, OnDestroy {
     columnsManager: true,
     schemaManager: true,
   };
-
+  searching: GuiSearching = {
+    enabled: true,
+    placeholder: "Search In table",
+  };
   public rowSelection: boolean | GuiRowSelection = {
     enabled: true,
     type: GuiRowSelectionType.CHECKBOX,
     mode: GuiRowSelectionMode.MULTIPLE,
   };
+  reload_dhcp_server(){
+    this.get_DHCP_data();
+  }
   Chartoptions = {
     responsive: true,
     _self :this,
@@ -250,9 +267,20 @@ export class DeviceComponent implements OnInit, OnDestroy {
   };
 
   ngOnInit(): void {
+
+    if (window.innerWidth <= 1200) {
+      this.small_screen = true;
+    }
+    window.onresize = () => (this.small_screen = window.innerWidth <= 1200);
     this.devid = Number(this.route.snapshot.paramMap.get("id"));
     this.options = this.Chartoptions;
-    this.initDeviceInfo();
+    // wait untill sessionloaded is set
+    let interval = setInterval(() => {
+      if (this.sessionloaded) {
+        clearInterval(interval);
+        this.initDeviceInfo();
+      }
+    }, 100);
   }
 
   optionsDefault = {
@@ -466,11 +494,43 @@ export class DeviceComponent implements OnInit, OnDestroy {
     });
   }
 
+  get_DHCP_data() {
+    if(!this.ispro)
+      return;
+    var _self = this;
+    if(_self.reloading)
+      return;
+    _self.reloading = true;
+    _self.data_provider
+    .get_dev_dhcp_info(_self.devid)
+    .then((res) => {
+      _self.dhcp_server_available = Boolean(res.length);
+      _self.dhcp_server_data = res;
+      // loop in dhcp_server_data and create a new object with the data for chart for each dhcp server
+      _self.reloading = false;
+      _self.dhcp_server_data.forEach((element:any) => {
+        var pooldata=element.pools[0];
+        element.chartpools = {
+          labels: ['Used', 'Free'],
+          datasets: [{
+            backgroundColor: [ '#E46651','#41B883'],
+            data: [pooldata.used_ips, pooldata.available_ips]
+          }]
+        };
+      });
+    });
+  }
+  reload_device(): void {
+    this.initDeviceInfo();
+  }
   initDeviceInfo(): void {
     var _self = this;
+    if (this.reloading) return;
     clearInterval(this.data_interval);
+    if(_self.ispro) _self.get_DHCP_data();
     this.updateData();
     this.data_interval = setInterval(() => {
+      this.reloading = true;
       this.data_provider.get_dev_info(this.devid).then((res) => {
         _self.devdata = res;
         if ("is_radio" in res) _self.is_radio = res.is_radio;
@@ -480,12 +540,17 @@ export class DeviceComponent implements OnInit, OnDestroy {
           .then((res) => {
             _self.devsensors = res;
             _self.loading = false;
+            _self.reloading = false;
+
             if (_self.is_radio) _self.get_radio_data();
+
           });
       });
-    }, 60000);
+    }, 30000);
   }
-
+  show_history(itme:any) {
+    return
+  }
   ngOnDestroy() {
     clearInterval(this.data_interval);
   }

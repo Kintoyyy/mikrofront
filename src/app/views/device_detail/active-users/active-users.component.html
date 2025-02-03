@@ -1,0 +1,38 @@
+<c-row>
+  <c-col xs>
+    <c-card class="mb-1" style="border: none">
+      <c-card-header>
+        <h6>Active Users</h6>
+      </c-card-header>
+      <c-card-body style="height: 275px;overflow: auto;">
+        <h5 style="display: inline-block;">Current active users : <c-badge color="success">
+            {{active_users.length}}</c-badge></h5>
+        <table cTable small [responsive]="true">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Address</th>
+              <th scope="col">Att</th>
+              <th scope="col">Group</th>
+              <th scope="col">Name</th>
+              <th scope="col">Via</th>
+              <th scope="col">kill</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of active_users; index as i">
+              <td>{{i+1}}</td>
+              <td>{{item['address']}}</td>
+              <td>{{item['when']}}</td>
+              <td>{{item['group']}}</td>
+              <td>{{item['name']}}</td>
+              <td>{{item['via']}}</td>
+              <td><button cButton (click)="killsession(item)" style="padding: 0;" size="sm" color="danger" variant="ghost"><i class="fa-solid fa-skull-crossbones"></i>
+                    kill</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

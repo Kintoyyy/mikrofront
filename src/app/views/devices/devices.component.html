@@ -118,6 +118,9 @@
                   <!-- <button size="sm" (click)="single_device_action(item,'upgrade')" style="padding: 4px 7px;"
                     cListGroupItem><i class="text-primary fa-solid fa-microchip"></i><small>
                       Upgrade Firmware</small></button> -->
+                  <button size="sm" (click)="single_device_action(item,'devlogs')" style="padding: 4px 7px;"
+                    cListGroupItem><i class="fa-regular fa-rectangle-list"></i><small>
+                      Device Logs</small></button>
                   <button size="sm" (click)="single_device_action(item,'logauth')" style="padding: 4px 7px;"
                     cListGroupItem><i class="text-primary fa-regular fa-clock"></i><small>
                       Show Auth Logs</small></button>
@@ -176,8 +179,8 @@
   <c-modal-body>
     <div *ngIf="scanwizard_step==1" class="mb-5" style="text-align: center;">
       <h5 class="mb-5">Please select searching method</h5>
-      <button cButton color="info" (click)="scanwizard(2,'chip')" [disabled]="true" class="mx-1" size="lg"><img width="100px"
-          src="assets/img/chip.png" /><br />Layer2 Scan</button>
+      <button cButton color="info" (click)="scanwizard(2,'chip')" [disabled]="true" class="mx-1" size="lg"><img
+          width="100px" src="assets/img/chip.png" /><br />Layer2 Scan</button>
       <button cButton color="info" (click)="scanwizard(2,'ip')" class="mx-1" size="lg"><img width="100px"
           src="assets/img/tcpip.png" /><br />TCP/IP Scan</button>
     </div>
@@ -256,8 +259,9 @@
     </div>
   </c-modal-body>
   <c-modal-footer>
-    <h6 style="margin: 0 auto;" *ngIf="scanwizard_step==1" ><button cButton color="primary" (click)="show_exec()" style="margin: 0 auto;"  variant="outline">Device scan logs</button></h6>
-    <small *ngIf="scan_type=='ip'" >Empty username and password means system default
+    <h6 style="margin: 0 auto;" *ngIf="scanwizard_step==1"><button cButton color="primary" (click)="show_exec()"
+        style="margin: 0 auto;" variant="outline">Device scan logs</button></h6>
+    <small *ngIf="scan_type=='ip'">Empty username and password means system default
       configuration</small>
   </c-modal-footer>
 </c-modal>
@@ -271,9 +275,7 @@
   <c-modal-body>
     <c-input-group class="mb-3">
       <gui-grid [autoResizeWidth]="true" *ngIf="ExecutedDataModalVisible" [searching]="searching"
-        [source]="ExecutedData" [columnMenu]="columnMenu" [sorting]="sorting" [infoPanel]="infoPanel"
-       [autoResizeWidth]=true
-        [paging]="paging">
+        [source]="ExecutedData" [columnMenu]="columnMenu" [sorting]="sorting" [infoPanel]="infoPanel" [paging]="paging">
         <gui-grid-column header="Start time" field="start">
           <ng-template let-value="item['started']" let-item="item" let-index="index">
             &nbsp; {{value}} </ng-template>
@@ -286,18 +288,18 @@
           <ng-template let-value="item['end_ip']" let-item="item" let-index="index">
             &nbsp; {{value}} </ng-template>
         </gui-grid-column>
-        <gui-grid-column   header="End time" field="end">
+        <gui-grid-column header="End time" field="end">
           <ng-template let-value="item['ended']" let-item="item" let-index="index">
             {{value}}
           </ng-template>
         </gui-grid-column>
         <gui-grid-column header="Logs" field="mac" align="center">
           <ng-template let-value="item['result']" let-item="item" let-index="index">
-            <button (click)="exportToCsv(value)"  color="primary" cButton>download</button>
+            <button (click)="exportToCsv(value)" color="primary" cButton>download</button>
           </ng-template>
         </gui-grid-column>
       </gui-grid>
-      <br/>
+      <br />
     </c-input-group>
     <hr />
   </c-modal-body>
@@ -377,7 +379,8 @@
     </c-input-group>
     <c-input-group class="mb-3">
       <span cInputGroupText>peer ip</span>
-      <select aria-label="Default select example" cFormControl [(ngModel)]="selected_device['editform']['peer_ip']" cSelect>
+      <select aria-label="Default select example" cFormControl [(ngModel)]="selected_device['editform']['peer_ip']"
+        cSelect>
         <option *ngFor="let o of selected_device['editform']['ips']" [value]="o">{{o}}</option>
       </select>
     </c-input-group>

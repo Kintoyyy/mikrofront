@@ -10,6 +10,7 @@ import {
   GridModule,
   CollapseModule,
   BadgeModule,
+  AlertModule,
 } from "@coreui/angular";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
 import { DevLogsRoutingModule } from "./devlogs-routing.module";
@@ -41,7 +42,9 @@ import { MatSelectModule } from "@angular/material/select";
     MatSelectModule,
     NgxMatSelectSearchModule,
     MatDatepickerModule,
+    AlertModule,
   ],
   declarations: [DevLogsComponent],
+  exports: [DevLogsComponent],
 })
 export class DevLogsModule {}

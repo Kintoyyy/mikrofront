@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from "@angular/core";
+import { Component, OnInit, ViewEncapsulation,Input } from "@angular/core";
 import { FormControl } from "@angular/forms";
 import { dataProvider } from "../../providers/mikrowizard/data";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -20,11 +20,13 @@ import { Subject } from "rxjs";
 
 
 @Component({
+  selector: 'app-devlogs',
   templateUrl: "devlogs.component.html",
   styleUrls: ["devlogs.component.scss"],
   encapsulation: ViewEncapsulation.None,
 })
 export class DevLogsComponent implements OnInit {
+  @Input() component_devid: any=false;
   public uid: number;
   public uname: string;
   public tz: string = "UTC"
@@ -40,6 +42,7 @@ export class DevLogsComponent implements OnInit {
   public event_types: any = [];
   public event_types_filtered: any = [];
   public filters_visible: boolean = false;
+  public reloading: boolean = false;
   constructor(
     private data_provider: dataProvider,
     private router: Router,
@@ -174,7 +177,11 @@ export class DevLogsComponent implements OnInit {
   };
   ngOnInit(): void {
     var _self = this;
-    this.devid = Number(this.route.snapshot.paramMap.get("devid"));
+    if (this.component_devid) {
+      this.devid = this.component_devid;
+    } else{
+      this.devid = Number(this.route.snapshot.paramMap.get("devid"));
+    }
     if (this.devid > 0) {
       this.filters["devid"] = this.devid;
     }
@@ -210,6 +217,8 @@ export class DevLogsComponent implements OnInit {
   }
   initGridTable(): void {
     var _self = this;
+    if(this.reloading) return;
+    this.reloading = true;
     this.data_provider.get_dev_logs(this.filters).then((res) => {
       let index = 1;
       this.source = res.map((d: any) => {
@@ -233,8 +242,8 @@ export class DevLogsComponent implements OnInit {
         return d;
       });
       _self.event_types_filtered = _self.event_types;
-      console.dir(this.source);
       this.loading = false;
+      this.reloading = false;
     });
   }
 }

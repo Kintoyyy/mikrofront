@@ -1,10 +1,22 @@
 <c-row>
   <c-col xs>
-    <c-card class="mb-4">
+    <c-card class="mb-4"  [ngStyle]="component_devid && {'border-top': 'none'}">
       <c-card-header>
         <c-row>
-          <c-col xs [lg]="11">
-            Accunting Logs
+          <c-col xs [lg]="11" style="display: flex;flex-direction: column;align-items: flex-start;">
+            <h5>Accunting Logs
+              <a style="cursor: pointer;" (click)="reinitgrid('none','none')"><i
+                  *ngIf="devid!=0 && component_devid && !reloading" class="fa-solid fa-arrows-rotate"
+                  style="color: #74C0FC;"></i>
+                <i *ngIf="devid!=0 && component_devid && reloading" class="fa-solid fa-arrows-rotate fa-spin"
+                  style="color: #74C0FC;"></i>
+              </a>
+            </h5>
+            <c-badge color="warning" *ngIf="devid!=0 && !component_devid">Filtered Result For Device ID
+              {{devid}}</c-badge>
+            <c-alert color="warning" style="padding-top: 5px!important;font-size: 0.8rem;display: inline-block;" *ngIf="!filters['start_time'] && !filters['end_time']">
+              <i class="fa-solid fa-triangle-exclamation mx-1"></i>Showing <strong>last 24 hours logs</strong> by default. Use filters to modify the date and time.
+            </c-alert>
           </c-col>
           <c-col xs [lg]="1">
             <button (click)="toggleCollapse()" cButton class="me-1" color="primary"><i

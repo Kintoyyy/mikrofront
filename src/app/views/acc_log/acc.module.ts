@@ -7,6 +7,8 @@ import {
   FormModule,
   GridModule,
   CollapseModule,
+  BadgeModule,
+  AlertModule
 } from "@coreui/angular";
 
 import { AccRoutingModule } from "./acc-routing.module";
@@ -36,7 +38,10 @@ import { FormsModule } from "@angular/forms";
     MatInputModule,
     MatDatepickerModule,
     MatSelectModule,
+    BadgeModule,
+    AlertModule
   ],
   declarations: [AccComponent],
+  exports: [AccComponent],
 })
 export class AccModule {}

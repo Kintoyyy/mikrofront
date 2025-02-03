@@ -7,6 +7,7 @@ import {
   GridModule,
   CollapseModule,
   DropdownModule,
+  AlertModule,
 } from "@coreui/angular";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
 import { SyslogRoutingModule } from "./syslog-routing.module";
@@ -35,6 +36,7 @@ import { MatSelectModule } from "@angular/material/select";
     MatSelectModule,
     NgxMatSelectSearchModule,
     MatDatepickerModule,
+    AlertModule,
   ],
   declarations: [SyslogComponent],
 })

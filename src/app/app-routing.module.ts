@@ -85,6 +85,11 @@ const routes: Routes = [
           import('./views/user_tasks/user_tasks.module').then((m) => m.UserTasksModule)
       },
       {
+        path: 'cloner',
+        loadChildren: () =>
+          import('./views/cloner/cloner.module').then((m) => m.ClonerModule)
+      },
+      {
         path: 'snippets',
         loadChildren: () =>
           import('./views/snippets/snippets.module').then((m) => m.SnippetsModule)

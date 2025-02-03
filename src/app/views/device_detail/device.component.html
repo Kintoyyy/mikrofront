@@ -1,234 +1,321 @@
-<c-alert style="margin-bottom: 5px;margin-top: 5px;" *ngIf="!loading && devdata['update_availble']"
-  (click)="logger(devdata['sensors'])" color="warning">Firmware
-  Update availble For This Device!</c-alert>
-<c-alert style="margin-bottom: 5px;margin-top: 5px;" *ngIf="!loading && devdata['upgrade_availble']"
-  (click)="logger(devdata['upgrade_availble'])" color="info">Device is updated but needs to upgrade firmware!</c-alert>
-
-<c-row *ngIf="!loading">
-  <c-col xs>
-    <c-card class="mb-1">
-      <c-card-header>
-        <c-row>
-          <c-col md="6" sm="12" style="display: flex;flex-direction: row;align-items: center;">
-            <h4 style="height: 100%;line-height: 170%;margin: 0;">{{devdata['name'] }}<small style="font-size: 50%;"> ( {{devdata['ip'] }} )</small></h4>
-          </c-col>
-          <c-col md="6" sm="12" class="justify-content-end" style="display: flex;flex-direction: row;align-items: center;">
-            <c-button-group size="sm" aria-label="Upate interval" role="group">
-              <button cButton color="primary" size="sm" (click)="delta='5m';updateData()" [active]="delta=='5m'">5 minute</button>
-              <button cButton color="primary" size="sm" (click)="delta='1h';updateData()" [active]="delta=='1h'">Hourly</button>
-              <button cButton color="primary" size="sm" (click)="delta='daily';updateData()"
-                [active]="delta=='daily'">Daily</button>
-              <button cButton color="primary" (click)="delta='live';updateData()" [active]="delta=='live'">Live</button>
-            </c-button-group>
-            <c-form-check (click)="switch_total()" sizing="xl" class="mx-2" switch>
-              <input cFormCheckInput [checked]="total_type=='bps'" type="checkbox" />
-              <label cFormCheckLabel>
-                <span *ngIf="total_type=='bps'">Total bbs</span>
-                <span *ngIf="total_type!='bps'">Total pps</span>
-              </label>
-            </c-form-check>
-          </c-col>
-        </c-row>
-
-      </c-card-header>
-
-      <c-card-body>
-        <app-widgets-dropdown *ngIf="!loading" [devicedata]=devsensors></app-widgets-dropdown>
-      </c-card-body>
-    </c-card>
-  </c-col>
-</c-row>
-
 <c-row>
-  <c-col xs>
-    <c-card class="mb-1">
-      <c-card-body>
-        <c-row style="flex-direction:row">
-          <ng-container *ngFor="let item of devdata | keyvalue; index as i">
-            <c-input-group *ngIf="checkitem(item)" class="mr-0 ml-0 mb-1"
-              style="padding-right:unset;width: auto;flex: 1 1 auto;flex-flow:  nowrap;flex: unset;">
-              <span
-                style="padding: 0.175rem 0.35rem;background-color:#4f5d73;text-transform: capitalize;color:#fff;font-size:0.7rem"
-                cInputGroupText>{{item.key}}</span>
-              <span _ngcontent-ng-c666080582="" cinputgrouptext=""
-                style="padding: 0.175rem 0.35rem;color: rgba(44, 56, 74, 0.95);font-size: 0.7rem;background-color: #d8dbe0;border-color: #b1b7c1;"
-                class="input-group-text">{{ item.value }}</span>
-            </c-input-group>
-          </ng-container>
-        </c-row>
-      </c-card-body>
-    </c-card>
-  </c-col>
-</c-row>
-<!-- Mikrotik interfaces table -->
-<c-row>
-  <c-col xs>
-    <c-card class="mb-1">
-      <c-card-body>
-        <c-row style="flex-direction:row">
-          <gui-grid [source]="interfaces" [columnMenu]="columnMenu" [sorting]="sorting" [infoPanel]="infoPanel"
-            [autoResizeWidth]=true>
-            <gui-grid-column header="Name" field="name">
-              <ng-template let-value="item.name" let-item="item" let-index="index">
+  <c-card class="mb-1">
+    <c-card-header>
+      <c-row *ngIf="!loading">
+        <c-col md="6" sm="12" style="display: flex; flex-direction: row; align-items: center">
+          <h4 style="height: 100%; line-height: 170%; margin: 0">
+            {{ devdata["name"] }}<small style="font-size: 50%"> ( {{ devdata["ip"] }} )</small>
+          </h4>
+        </c-col>
+        <app-device-info [devdata]="devdata"> </app-device-info>
+      </c-row>
+    </c-card-header>
+  </c-card>
 
-                {{value}} - {{item['default-name']}}
-              </ng-template>
-            </gui-grid-column>
+  <c-col xs style="border: 1px solid #ddd; border-radius: 4px; padding: 0;width: 100%;">
+    <div class="nav nav-underline" style="background: #fff; border-bottom: 2px solid #2c3e50;width: 100%;">
+      <div class="nav-item" (click)="actice_tab_index = 0">
+        <a class="nav-link" [active]="true" [cTabContent]="tabContent" [tabPaneIdx]="0" style="display: inline-block;padding-right: 0;">Device Details</a>
+        <a class="nav-link" style="display: inline-block;" *ngIf="actice_tab_index==0" (click)="reload_device()">
+          <i class="fa-solid fa-arrows-rotate" style="color: #74C0FC;" *ngIf="!reloading"></i>
+          <i class="fa-solid fa-arrows-rotate fa-spin" *ngIf="reloading" style="color: #74C0FC;"></i>
+        </a>
+      </div>
+      <div class="nav-item" [ngStyle]="{ display: !is_radio ? 'none' : 'block' }" (click)="actice_tab_index = 1">
+        <a class="nav-link" [active]="false" [cTabContent]="tabContent" [tabPaneIdx]="1">Radio Info</a>
+      </div>
+      <div class="nav-item" [ngStyle]="{ display: !dhcp_server_available ? 'none' : 'block' }" (click)="actice_tab_index = 2">
+        <a class="nav-link" [active]="false" [cTabContent]="tabContent" [tabPaneIdx]="2" style="display: inline-block;padding-right: 0;">DHCP server</a>
+        <a class="nav-link" style="display: inline-block;" *ngIf="actice_tab_index==2" (click)="reload_dhcp_server()">
+          <i class="fa-solid fa-arrows-rotate" style="color: #74C0FC;" *ngIf="!reloading"></i>
+          <i class="fa-solid fa-arrows-rotate fa-spin"  *ngIf="reloading" style="color: #74C0FC;"></i>
+        </a>
+      </div>
+      <div class="nav-item" (click)="actice_tab_index = 3">
+        <a class="nav-link" [active]="false" (click)="show_dev_logs = true" [cTabContent]="tabContent"
+          [tabPaneIdx]="3">Device Events</a>
+      </div>
+      <div class="nav-item" (click)="actice_tab_index = 4">
+        <a class="nav-link" [active]="false" (click)="show_auth_logs = true" [cTabContent]="tabContent"
+          [tabPaneIdx]="4">Authentication</a>
+      </div>
+      <div class="nav-item" (click)="actice_tab_index = 5">
+        <a class="nav-link" [active]="false" (click)="show_acc_logs = true" [cTabContent]="tabContent"
+          [tabPaneIdx]="5">Accounting</a>
+      </div>
+    </div>
 
-            <gui-grid-column header="MAC" field="mac-address">
-              <ng-template let-value="item['mac-address']" let-item="item" let-index="index">
-
-                {{value}}
-              </ng-template>
-            </gui-grid-column>
-            <gui-grid-column header="rx" field="rx-byte">
-              <ng-template let-value="item['rx-byte']" let-item="item" let-index="index">
-
-                <div>{{convert_bw_human(value,'rx')}}</div>
-              </ng-template>
-            </gui-grid-column>
-            <gui-grid-column header="tx" field="tx-byte">
-              <ng-template let-value="item['tx-byte']" let-item="item" let-index="index">
-
-                {{convert_bw_human(value,'tx')}}
-              </ng-template>
-            </gui-grid-column>
-            <gui-grid-column header="l2mtu" field="l2mtu">
-              <ng-template let-value="item.l2mtu" let-item="item" let-index="index">
-
-                curr:{{value}}<br />
-                max : {{item['max-l2mtu']}}
-              </ng-template>
-            </gui-grid-column>
-            <gui-grid-column header="rx/s" field="rx-bits-per-second" [enabled]="false">
-              <ng-template let-value="item['rx-bits-per-second']" let-item="item" let-index="index">
-
-                {{convert_bw_human(value,'rx')}}
-
-              </ng-template>
-            </gui-grid-column>
-            <gui-grid-column header="tx/s" field="tx-bits-per-second" [enabled]="false">
-              <ng-template let-value="item['tx-bits-per-second']" let-item="item" let-index="index">
-
-                {{convert_bw_human(value,'tx')}}
-              </ng-template>
-            </gui-grid-column>
-            <gui-grid-column header="Created" field="created" [enabled]="false">
-              <ng-template let-value="item.created" let-item="item.id" let-index="index">
-
-                {{value}}
-              </ng-template>
-            </gui-grid-column>
-            <gui-grid-column header="Last Up" field="last-link-up-time">
-              <ng-template let-value="item['last-link-up-time']" let-item="item" let-index="index">
-
-                {{value}}
-              </ng-template>
-            </gui-grid-column>
-            <gui-grid-column header="Created" field="created" [enabled]="false">
-              <ng-template let-value="item.created" let-item="item.id" let-index="index">
-                {{value}}
-              </ng-template>
-            </gui-grid-column>
-            <gui-grid-column header="Actions" field="action" width="60" align="center">
-              <ng-template let-value="item.id" let-item="item" let-index="index">
-                <button cButton color="info" size="sm" (click)="show_interface_rate(item['default-name'])"
-                  class="mx-1"><i class="fa-solid fa-chart-line"></i></button>
-              </ng-template>
-            </gui-grid-column>
-          </gui-grid>
-        </c-row>
-      </c-card-body>
-    </c-card>
-  </c-col>
-</c-row>
-
-<c-row *ngIf="is_radio && !radio_loading">
-  <c-col xs md="12" *ngFor="let raddata of radio_devsensors | keyvalue">
-    <c-card class="mb-1">
-      <c-card-header><h6>Radio data</h6></c-card-header>
-      <c-card-body>
-        <h6>{{raddata.key}}</h6>
-        <app-widgets-dropdown [devicedata]=raddata.value></app-widgets-dropdown>
+    <c-tab-content class="command-sections" style="width: 100%;" #tabContent="cTabContent">
+      <h5 *ngIf="loading" style="text-align: center;height: 100vh;line-height: 33vh;"><c-spinner color="info" variant="grow"></c-spinner>Loading...</h5>
+      <c-tab-pane *ngIf="!loading">
+        <c-card class="mb-1">
+          <c-card-body>
+            <c-row>
+              <c-col md="12" sm="12" class="justify-content-end"
+                style="display: flex; flex-direction: row; align-items: center;padding-bottom: 5px;">
+                <c-button-group size="sm" aria-label="Upate interval" role="group">
+                  <button cButton color="primary" size="sm" (click)="delta = '5m'; updateData()"
+                    [active]="delta == '5m'">
+                    5 minute
+                  </button>
+                  <button cButton color="primary" size="sm" (click)="delta = '1h'; updateData()"
+                    [active]="delta == '1h'">
+                    Hourly
+                  </button>
+                  <button cButton color="primary" size="sm" (click)="delta = 'daily'; updateData()"
+                    [active]="delta == 'daily'">
+                    Daily
+                  </button>
+                  <button cButton color="primary" (click)="delta = 'live'; updateData()" [active]="delta == 'live'">
+                    Live
+                  </button>
+                </c-button-group>
+                <c-form-check (click)="switch_total()" sizing="xl" class="mx-2" switch>
+                  <input cFormCheckInput [checked]="total_type == 'bps'" type="checkbox" />
+                  <label cFormCheckLabel>
+                    <span *ngIf="total_type == 'bps'">Total bbs</span>
+                    <span *ngIf="total_type != 'bps'">Total pps</span>
+                  </label>
+                </c-form-check>
+              </c-col>
+            </c-row>
+            <app-widgets-dropdown *ngIf="!loading" [devicedata]="devsensors"></app-widgets-dropdown>
+          </c-card-body>
+        </c-card>
         <c-row>
-          <c-col md="3">
-            <table style="word-break:  break-word" small stripedColumns cTable>
-              <tbody>
-            <ng-container *ngFor="let d of raddata.value['data'] | keyvalue ; let i=index">
-              <tr *ngIf="i<objectlen(raddata.value['data'])/4">
-                <th style="width: 20%;text-wrap: nowrap;">{{d.key}}</th>
-                <td scope="row">{{d.value}}</td>
-              </tr>
-            </ng-container>
-              </tbody>
-            </table>
+          <c-col sm="12" lg="6">
+            <c-card class="mb-1">
+              <c-card-body style="padding: 0;">
+                <app-ping-stats [ping]="devdata['ping']"></app-ping-stats>
+              </c-card-body>
+            </c-card>
           </c-col>
-          <c-col md="3">
+          <c-col sm="12" lg="6">
+            <c-card class="mb-1">
+              <c-card-body style="padding: 0;">
+                <app-active-users [active_users]="devdata['active_users']" [devid]="devid"></app-active-users>
+              </c-card-body>
+            </c-card>
+          </c-col>
+        </c-row>
+        <!-- Mikrotik interfaces table -->
+        <c-row class="interfaces">
+          <c-col xs>
+            <c-card class="mb-1">
+              <c-card-body>
+                <c-row style="flex-direction: row">
+                  <gui-grid [source]="interfaces" [columnMenu]="columnMenu" [sorting]="sorting" [infoPanel]="infoPanel"
+                    [autoResizeWidth]="true">
+                    <gui-grid-column header="Name" field="name">
+                      <ng-template let-value="item.name" let-item="item" let-index="index">
+                        {{ value }} - {{ item["default-name"] }}
+                      </ng-template>
+                    </gui-grid-column>
 
-          <table style="word-break:  break-word" small stripedColumns cTable>
-            <tbody>
-          <ng-container *ngFor="let d of raddata.value['data'] | keyvalue ; let i=index">
-            <tr *ngIf="i>=objectlen(raddata.value['data'])/4 && i<(objectlen(raddata.value['data'])/4)*2">
-              <th style="width: 20%;text-wrap: nowrap;">{{d.key}}</th>
-              <td scope="row">{{d.value}}</td>
-            </tr>
-          </ng-container>
-            </tbody>
-          </table>
-        </c-col>
-        <c-col md="3">
-          <table style="word-break:  break-word" small stripedColumns cTable>
-            <tbody>
-          <ng-container *ngFor="let d of raddata.value['data'] | keyvalue ; let i=index">
-            <tr *ngIf="i>=(objectlen(raddata.value['data'])/4)*2 && i<(objectlen(raddata.value['data'])/4)*3">
-              <th style="width: 20%;text-wrap: nowrap;">{{d.key}}</th>
-              <td scope="row">{{d.value}}</td>
-            </tr>
-          </ng-container>
-            </tbody>
-          </table>
-        </c-col>
-        <c-col md="3">
-          <table small stripedColumns cTable>
-            <tbody>
-          <ng-container *ngFor="let d of raddata.value['data'] | keyvalue ; let i=index">
-            <tr *ngIf="i>=(objectlen(raddata.value['data'])/4)*3">
-              <th>{{d.key}}</th>
-              <td scope="row">{{d.value}}</td>
-            </tr>
-          </ng-container>
-            </tbody>
-          </table>
-        </c-col>
+                    <gui-grid-column header="MAC" field="mac-address">
+                      <ng-template let-value="item['mac-address']" let-item="item" let-index="index">
+                        {{ value }}
+                      </ng-template>
+                    </gui-grid-column>
+                    <gui-grid-column header="rx" field="rx-byte">
+                      <ng-template let-value="item['rx-byte']" let-item="item" let-index="index">
+                        <div>{{ convert_bw_human(value, "rx") }}</div>
+                      </ng-template>
+                    </gui-grid-column>
+                    <gui-grid-column header="tx" field="tx-byte">
+                      <ng-template let-value="item['tx-byte']" let-item="item" let-index="index">
+                        {{ convert_bw_human(value, "tx") }}
+                      </ng-template>
+                    </gui-grid-column>
+                    <gui-grid-column header="l2mtu" field="l2mtu">
+                      <ng-template let-value="item.l2mtu" let-item="item" let-index="index">
+                        curr:{{ value }}<br />
+                        max : {{ item["max-l2mtu"] }}
+                      </ng-template>
+                    </gui-grid-column>
+                    <gui-grid-column header="rx/s" field="rx-bits-per-second" [enabled]="false">
+                      <ng-template let-value="item['rx-bits-per-second']" let-item="item" let-index="index">
+                        {{ convert_bw_human(value, "rx") }}
+                      </ng-template>
+                    </gui-grid-column>
+                    <gui-grid-column header="tx/s" field="tx-bits-per-second" [enabled]="false">
+                      <ng-template let-value="item['tx-bits-per-second']" let-item="item" let-index="index">
+                        {{ convert_bw_human(value, "tx") }}
+                      </ng-template>
+                    </gui-grid-column>
+                    <gui-grid-column header="Created" field="created" [enabled]="false">
+                      <ng-template let-value="item.created" let-item="item.id" let-index="index">
+                        {{ value }}
+                      </ng-template>
+                    </gui-grid-column>
+                    <gui-grid-column header="Last Up" field="last-link-up-time">
+                      <ng-template let-value="item['last-link-up-time']" let-item="item" let-index="index">
+                        {{ value }}
+                      </ng-template>
+                    </gui-grid-column>
+                    <gui-grid-column header="Created" field="created" [enabled]="false">
+                      <ng-template let-value="item.created" let-item="item.id" let-index="index">
+                        {{ value }}
+                      </ng-template>
+                    </gui-grid-column>
+                    <gui-grid-column header="Actions" field="action" width="60" align="center">
+                      <ng-template let-value="item.id" let-item="item" let-index="index">
+                        <button cButton color="info" size="sm" (click)="show_interface_rate(item['default-name'])"
+                          class="mx-1">
+                          <i class="fa-solid fa-chart-line"></i>
+                        </button>
+                      </ng-template>
+                    </gui-grid-column>
+                  </gui-grid>
+                </c-row>
+              </c-card-body>
+            </c-card>
+          </c-col>
         </c-row>
-        <c-row *ngIf="raddata.value['strength-at-rates']">
-        <c-col>
-          <table style="word-break:  break-word" small borderless cTable>
-            <tbody>
-                <tr>
-                  <th style="text-wrap: nowrap;vertical-align: middle;padding: 5px;border-radius: 5px;background-color: #3399ff36;">Strength at rates</th>
-                  <td scope="row">
-                    <c-badge color="info" style="font-size: 0.85em;" class="mx-1" *ngFor="let st of strangth_at_rate_extract(raddata.value['strength-at-rates'])">{{st}}</c-badge>
-                  </td>
-                </tr>
-             </tbody>
-          </table>
-        </c-col>
+      </c-tab-pane>
+      <c-tab-pane *ngIf="!loading">
+        <c-row *ngIf="is_radio && !radio_loading">
+          <c-col xs md="12" *ngFor="let raddata of radio_devsensors | keyvalue">
+            <c-card class="mb-1">
+              <c-card-header>
+                <h6>Radio data</h6>
+              </c-card-header>
+              <c-card-body>
+                <h6>{{ raddata.key }}</h6>
+                <app-widgets-dropdown [devicedata]="raddata.value"></app-widgets-dropdown>
+                <c-row>
+                  <c-col md="3">
+                    <table style="word-break: break-word" small stripedColumns cTable>
+                      <tbody>
+                        <ng-container *ngFor="
+                          let d of raddata.value['data'] | keyvalue;
+                          let i = index
+                        ">
+                          <tr *ngIf="i < objectlen(raddata.value['data']) / 4">
+                            <th style="width: 20%; text-wrap: nowrap">
+                              {{ d.key }}
+                            </th>
+                            <td scope="row">{{ d.value }}</td>
+                          </tr>
+                        </ng-container>
+                      </tbody>
+                    </table>
+                  </c-col>
+                  <c-col md="3">
+                    <table style="word-break: break-word" small stripedColumns cTable>
+                      <tbody>
+                        <ng-container *ngFor="
+                          let d of raddata.value['data'] | keyvalue;
+                          let i = index
+                        ">
+                          <tr *ngIf="
+                            i >= objectlen(raddata.value['data']) / 4 &&
+                            i < (objectlen(raddata.value['data']) / 4) * 2
+                          ">
+                            <th style="width: 20%; text-wrap: nowrap">
+                              {{ d.key }}
+                            </th>
+                            <td scope="row">{{ d.value }}</td>
+                          </tr>
+                        </ng-container>
+                      </tbody>
+                    </table>
+                  </c-col>
+                  <c-col md="3">
+                    <table style="word-break: break-word" small stripedColumns cTable>
+                      <tbody>
+                        <ng-container *ngFor="
+                          let d of raddata.value['data'] | keyvalue;
+                          let i = index
+                        ">
+                          <tr *ngIf="
+                            i >= (objectlen(raddata.value['data']) / 4) * 2 &&
+                            i < (objectlen(raddata.value['data']) / 4) * 3
+                          ">
+                            <th style="width: 20%; text-wrap: nowrap">
+                              {{ d.key }}
+                            </th>
+                            <td scope="row">{{ d.value }}</td>
+                          </tr>
+                        </ng-container>
+                      </tbody>
+                    </table>
+                  </c-col>
+                  <c-col md="3">
+                    <table small stripedColumns cTable>
+                      <tbody>
+                        <ng-container *ngFor="
+                          let d of raddata.value['data'] | keyvalue;
+                          let i = index
+                        ">
+                          <tr *ngIf="
+                            i >= (objectlen(raddata.value['data']) / 4) * 3
+                          ">
+                            <th>{{ d.key }}</th>
+                            <td scope="row">{{ d.value }}</td>
+                          </tr>
+                        </ng-container>
+                      </tbody>
+                    </table>
+                  </c-col>
+                </c-row>
+                <c-row *ngIf="raddata.value['strength-at-rates']">
+                  <c-col>
+                    <table style="word-break: break-word" small borderless cTable>
+                      <tbody>
+                        <tr>
+                          <th style="
+                            text-wrap: nowrap;
+                            vertical-align: middle;
+                            padding: 5px;
+                            border-radius: 5px;
+                            background-color: #3399ff36;
+                          ">
+                            Strength at rates
+                          </th>
+                          <td scope="row">
+                            <c-badge color="info" style="font-size: 0.85em" class="mx-1" *ngFor="
+                              let st of strangth_at_rate_extract(
+                                raddata.value['strength-at-rates']
+                              )
+                            ">{{ st }}</c-badge>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </c-col>
+                </c-row>
+              </c-card-body>
+            </c-card>
+          </c-col>
         </c-row>
-      </c-card-body>
-    </c-card>
+      </c-tab-pane>
+      <c-tab-pane>
+        <ng-container *ngIf="dhcp_server_available">
+          <app-dhcp-info [tz]="tz" [dhcp_server_data]="dhcp_server_data" [small_screen]="small_screen" [columnMenu]="columnMenu"
+            [sorting]="sorting" [searching]="searching" [infoPanel]="infoPanel" [paging]="paging"></app-dhcp-info>
+        </ng-container>
+      </c-tab-pane>
+      <c-tab-pane style="width: 100%;padding-top: 10px;background-color: #fff;">
+        <app-devlogs style="width: 100%;" [component_devid]="devid"></app-devlogs>
+      </c-tab-pane>
+      <c-tab-pane style="width: 100%;padding-top: 10px;background-color: #fff;">
+        <app-authlogs style="width: 100%;" [component_devid]="devid"></app-authlogs>
+      </c-tab-pane>
+      <c-tab-pane style="width: 100%;padding-top: 10px;background-color: #fff;">
+        <app-acclogs style="width: 100%" [component_devid]="devid"></app-acclogs>
+      </c-tab-pane>
+    </c-tab-content>
   </c-col>
 </c-row>
-
 <c-modal #staticBackdropModal backdrop="static" size="xl" [visible]="InterfaceChartModalVisible"
   id="InterfaceChartModal">
   <c-modal-header>
-    <h5 cModalTitle>{{interface_rate['name']}}</h5>
+    <h5 cModalTitle>{{ interface_rate["name"] }}</h5>
     <button [cModalToggle]="staticBackdropModal.id" cButtonClose></button>
   </c-modal-header>
   <c-modal-body>
-    <c-chart [data]="interface_rate" [options]="options" type="line">
-    </c-chart>
+    <c-chart [data]="interface_rate" [options]="options" type="line"> </c-chart>
   </c-modal-body>
   <c-modal-footer>
     <button [cModalToggle]="staticBackdropModal.id" cButton color="secondary">

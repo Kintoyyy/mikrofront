@@ -172,6 +172,12 @@ export class dataProvider {
         }
         return this.MikroWizardRPC.sendJsonRequest("/api/dev/radio/sensors", data);
     }
+    get_dev_dhcp_info(id: number){
+        var data={
+            'devid':id,
+        }
+        return this.MikroWizardRPC.sendJsonRequest("/api/dev/dhcp-server/get", data);
+    }
     get_dev_ifstat(id: number,delta:string="5m",iface:string="ether1",type:string="bps") {
         var data={
             'devid':id,
@@ -552,6 +558,48 @@ export class dataProvider {
             'action':action
         }
         return this.MikroWizardRPC.sendJsonRequest("/api/sysconfig/apply_update", data);
+    }
+
+
+    get_cloner_list() {
+        return this.MikroWizardRPC.sendJsonRequest("/api/cloner/list", {});
+    }
+
+    Add_cloner(data:any,members:any) {
+        data['members']=members;
+        return this.MikroWizardRPC.sendJsonRequest("/api/cloner/create", data);
+    }
+
+    Delete_cloner(clonerid:number) {
+        var data={
+            'clonerid':clonerid,
+        }
+        return this.MikroWizardRPC.sendJsonRequest("/api/cloner/delete", data);
+    }
+
+    Edit_cloner(data:any,members:any) {
+        data['members']=members;
+        return this.MikroWizardRPC.sendJsonRequest("/api/cloner/edit", data);
+    }
+
+    get_cloner_members(clonerid:number) {
+        var data={
+            'clonerid':clonerid,
+        }
+        return this.MikroWizardRPC.sendJsonRequest("/api/cloner/memberdetails", data);
+    }
+    killSession(devid:number,item:any){
+        var data={
+            'devid':devid,
+            'item':item
+        }
+        return this.MikroWizardRPC.sendJsonRequest("/api/dev/kill_session", data);
+    }
+    getDhcpHistory(item:any){
+        var data={
+            'item':item
+        }
+        return this.MikroWizardRPC.sendJsonRequest("/api/dhcp-history/get", data);
     }
     ////
     //// End api funcs

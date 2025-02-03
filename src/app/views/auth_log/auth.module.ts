@@ -7,6 +7,7 @@ import {
   GridModule,
   CollapseModule,
   BadgeModule,
+  AlertModule,
 } from '@coreui/angular';
 import { AuthRoutingModule } from './auth-routing.module';
 import { AuthComponent } from './auth.component';
@@ -32,9 +33,11 @@ import {MatSelectModule} from '@angular/material/select';
     MatInputModule,
     MatDatepickerModule,
     MatSelectModule,
-    BadgeModule
+    BadgeModule,
+    AlertModule
   ],
-  declarations: [AuthComponent]
+  declarations: [AuthComponent],
+  exports: [AuthComponent],
 })
 export class AuthModule {
 }

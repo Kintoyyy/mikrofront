@@ -60,9 +60,16 @@ export const navItems: INavData[] = [
     icon: 'fa-solid fa-database'
   },
   {
-    name: 'snippets',
+    name: 'Snippets',
     url: '/snippets',
     icon: 'fa-solid fa-code'
+  },
+  {
+    name: 'Sync and Cloner',
+    url: '/cloner',
+    icon: 'fa-solid fa-rotate',
+    attributes: { 'pro':true }
+
   },
   {
     name: 'Password Vault',

@@ -1,0 +1,42 @@
+<c-row>
+  <c-col xs>
+    <c-card class="mb-1" style="border: none;">
+      <c-card-header>
+        <h6>Ping status</h6>
+      </c-card-header>
+      <c-card-body style="height: 275px;overflow: auto;">
+        <h6 style="display: inline-block;">Successful pings : <c-badge color="success" style="font-size: 90%;">
+            {{ping['successful_pings']}}</c-badge></h6>
+        <h6 style="display: inline-block;margin-left: 0.5rem;"> | Failed pings : <c-badge color="danger"
+            style="font-size: 90%;"> {{ping['failed_pings']}}</c-badge></h6>
+        <h6 style="display: inline-block;margin-left: 0.5rem;">| Avrage : <c-badge color="dark" style="font-size: 90%;">
+            {{ping['average_ping_time']}} ms</c-badge></h6>
+        <table cTable small>
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Host</th>
+              <th scope="col">Time</th>
+              <th scope="col">Status</th>
+              <th scope="col">Quality</th>
+              <th scope="col">details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of ping['results']; index as i">
+              <td>{{i+1}}</td>
+              <td>{{item['host']}}</td>
+              <td>{{item['time']}} ms</td>
+              <td>{{item['status']}}</td>
+              <td><i style="color: {{item['color']}};margin-right:2px;"
+                  class="{{item['icon']}}"></i>{{item['ping_quality']}}</td>
+              <td><button cButton [cTooltip]="item['raw_response']" size="sm" style="padding: 0;" color="info"
+                  variant="ghost"><i class="fa-solid fa-info"></i>
+                  Details</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

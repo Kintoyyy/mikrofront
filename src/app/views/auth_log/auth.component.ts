@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from "@angular/core";
+import { Component, OnInit, ViewEncapsulation,Input } from "@angular/core";
 import { dataProvider } from "../../providers/mikrowizard/data";
 import { Router, ActivatedRoute } from "@angular/router";
 import { loginChecker } from "../../providers/login_checker";
@@ -30,16 +30,19 @@ interface IUser {
 }
 
 @Component({
+  selector: 'app-authlogs',
   templateUrl: "auth.component.html",
   styleUrls: ["auth.component.scss"],
   encapsulation: ViewEncapsulation.None,
 })
 export class AuthComponent implements OnInit {
+  @Input() component_devid: any=false;
   public uid: number;
   public uname: string;
   public tz: string = "UTC";
   public filterText: string;
   public devid: number = 0;
+  public reloading: boolean = false;
   public filters: any = {
     devid: false,
     ip: "",
@@ -166,7 +169,11 @@ export class AuthComponent implements OnInit {
     return str;
   }
   ngOnInit(): void {
-    this.devid = Number(this.route.snapshot.paramMap.get("devid"));
+    if (this.component_devid) {
+      this.devid = this.component_devid;
+    } else{
+      this.devid = Number(this.route.snapshot.paramMap.get("devid"));
+    }
     if (this.devid > 0) {
       this.filters["devid"] = this.devid;
     }
@@ -190,6 +197,8 @@ export class AuthComponent implements OnInit {
 
   initGridTable(): void {
     var _self = this;
+    if(this.reloading) return;
+    this.reloading = true;
     this.data_provider.get_auth_logs(this.filters).then((res) => {
       let index = 1;
       this.source = res.map((d: any) => {
@@ -217,6 +226,7 @@ export class AuthComponent implements OnInit {
         return d;
       });
       this.loading = false;
+      this.reloading = false;
     });
   }
 }

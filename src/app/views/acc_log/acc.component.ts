@@ -1,4 +1,4 @@
-import { Component, OnInit,  ViewEncapsulation } from "@angular/core";
+import { Component, OnInit,  ViewEncapsulation,Input } from "@angular/core";
 import { dataProvider } from "../../providers/mikrowizard/data";
 import { Router, ActivatedRoute } from "@angular/router";
 import { loginChecker } from "../../providers/login_checker";
@@ -19,15 +19,18 @@ import { formatInTimeZone } from "date-fns-tz";
 
 
 @Component({
+  selector: 'app-acclogs',
   templateUrl: "acc.component.html",
   styleUrls: ["acc.component.scss"],
   encapsulation: ViewEncapsulation.None,
 })
 export class AccComponent implements OnInit {
+  @Input() component_devid: any=false;
   public uid: number;
   public uname: string;
   public tz: string;
   public filterText: string;
+  public reloading: boolean = false;
   public filters: any = {
     devid: false,
     ip: "",
@@ -156,7 +159,11 @@ export class AccComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.devid = Number(this.route.snapshot.paramMap.get("devid"));
+    if (this.component_devid) {
+      this.devid = this.component_devid;
+    } else{
+      this.devid = Number(this.route.snapshot.paramMap.get("devid"));
+    }
     if (this.devid > 0) {
       this.filters["devid"] = this.devid;
     }
@@ -181,6 +188,8 @@ export class AccComponent implements OnInit {
 
   initGridTable(): void {
     var _self = this;
+    if(this.reloading) return;
+    this.reloading = true;
     this.data_provider.get_account_logs(this.filters).then((res) => {
       let index = 1;
       this.source = res.map((d: any) => {
@@ -199,6 +208,7 @@ export class AccComponent implements OnInit {
         return d;
       });
       this.loading = false;
+      this.reloading = false;
     });
   }
 }

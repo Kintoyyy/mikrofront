@@ -173,6 +173,9 @@ export class DevicesComponent implements OnInit, OnDestroy {
       case "logauth":
         this.router.navigate(["/authlog", { devid: dev.id }]);
         break;
+      case "devlogs":
+        this.router.navigate(["/devlogs", { devid: dev.id }]);
+        break;
       case "logacc":
         this.router.navigate(["/accountlog", { devid: dev.id }]);
         break;
@@ -402,6 +405,9 @@ export class DevicesComponent implements OnInit, OnDestroy {
             "You are not authorized to perform this action",
             "danger"
           );
+        }
+        else if ("error" in res) {
+          _self.show_toast("Error", res.error, "danger");
         }
         else{
         _self.show_toast("info", "Updating Firmwares Sent", "light");

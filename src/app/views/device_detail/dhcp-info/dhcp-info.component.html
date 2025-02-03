@@ -1,0 +1,168 @@
+<ng-container *ngFor="let item of dhcp_server_data ">
+  <c-row style="padding: 10px 0;" >
+    <c-col xl="3" sm="12">
+      <c-row *ngIf="small_screen">
+        <c-col sm="6" style="padding-right: 0;">
+          <c-card class="h-100">
+            <c-card-header>
+              <h6>Statics</h6>
+            </c-card-header>
+            <c-card-body>
+              <c-chart [data]="item['chartpools']" width="100%" type="doughnut"
+                [options]="{aspectRatio:2,responsive:true,'plugins': { legend : {position: 'left',fullSize: true}}}">
+              </c-chart>
+            </c-card-body>
+          </c-card>
+        </c-col>
+        <c-col sm="6" style="padding-left: 0;">
+          <c-card class="h-100">
+            <c-card-header>
+              <h6>DHCP server {{item['dhcp_server']}}</h6>
+            </c-card-header>
+            <c-card-body>
+              Pool name: {{item['address_pool']}}<br />
+              Static Ip: {{item['static_ips']}}<br />
+              Dynamic Ip: {{item['dynamic_ips']}}<br />
+              interface : {{item['interface']}}<br />
+            </c-card-body>
+          </c-card>
+        </c-col>
+
+      </c-row>
+      <c-card class="h-100" *ngIf="!small_screen">
+        <c-card style="border: none;">
+          <c-card-header>
+            <h6>Statics</h6>
+          </c-card-header>
+          <c-card-body>
+            <c-chart [data]="item['chartpools']" width="100%" type="doughnut">
+            </c-chart>
+          </c-card-body>
+        </c-card>
+        <c-card style="border: none;">
+          <c-card-body>
+
+            <table cTable small>
+              <tbody>
+                <tr>
+                  <th scope="row">Server name</th>
+                  <td>{{item['dhcp_server']}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Pool name</th>
+                  <td>{{item['address_pool']}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Static Ip</th>
+                  <td>{{item['static_ips']}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Dynamic Ip</th>
+                  <td>{{item['dynamic_ips']}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Interface</th>
+                  <td>{{item['interface']}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Duplicate AC-ID</th>
+                  <td>{{item['duplicate_agent_circuit_ids'].length}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </c-card-body>
+        </c-card>
+      </c-card>
+    </c-col>
+    <c-col xl="9" sm="12">
+      <c-card class="mb-1 h-100">
+        <c-card-body>
+          <gui-grid [source]="item['lease_table']" [columnMenu]="columnMenu" [sorting]="sorting"
+            [searching]="searching" [infoPanel]="infoPanel" [rowHeight]="28" [autoResizeWidth]=true [paging]="paging">
+            <gui-grid-column header="address" field="address">
+              <ng-template let-value="item.address" let-item="item" let-index="index">
+                {{value}}
+              </ng-template>
+            </gui-grid-column>
+            <gui-grid-column header="Type" field="dynamic">
+              <ng-template let-value="item" let-item="item" let-index="index">
+                <span *ngIf="item['dynamic']">Dynamic</span>
+                <span *ngIf="item['static']">Static</span>
+              </ng-template>
+            </gui-grid-column>
+            <gui-grid-column header="expire" field="expires-after">
+              <ng-template let-value="item['expires-after']" let-item="item" let-index="index">
+                {{value}}
+              </ng-template>
+            </gui-grid-column>
+            <gui-grid-column header="host-name" field="host-name">
+              <ng-template let-value="item['host-name']" let-item="item" let-index="index">
+                {{value}}
+              </ng-template>
+            </gui-grid-column>
+            <gui-grid-column header="last-seen" field="last-seen">
+              <ng-template let-value="item['last-seen']" let-item="item" let-index="index">
+                {{value}}
+              </ng-template>
+            </gui-grid-column>
+            <gui-grid-column header="status" field="status">
+              <ng-template let-value="item['status']" let-item="item" let-index="index">
+                {{value}}
+              </ng-template>
+            </gui-grid-column>
+            <gui-grid-column header="MAC" field="mac-address">
+              <ng-template let-value="item['mac-address']" let-item="item" let-index="index">
+                {{value}}
+              </ng-template>
+            </gui-grid-column>
+            <gui-grid-column header="Actions" width="60" field="">
+              <ng-template let-value="item" let-item="item" let-index="index">
+                <button cButton color="info" size="sm" (click)="show_history(item)" class="mx-1"><i
+                    class="fa-solid fa-clock-rotate-left"></i></button>
+              </ng-template>
+            </gui-grid-column>
+          </gui-grid>
+        </c-card-body>
+      </c-card>
+    </c-col>
+  </c-row>
+</ng-container>
+
+
+<c-modal #DhcpHistoryModal backdrop="static" size="xl" [visible]="dhcp_history_modal"
+  id="DhcpHistoryModal" *ngIf="dhcp_history_modal">
+  <c-modal-header>
+    <h5 cModalTitle>History for {{current_dhcp['mac-address']}}</h5>
+    <button [cModalToggle]="DhcpHistoryModal.id" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body style="overflow-x: auto;">
+    <gui-grid style="min-width: 900px;" [source]="dhcp_history" [columnMenu]="columnMenu" [sorting]="sorting"
+    [searching]="searching" [infoPanel]="infoPanel" [rowHeight]="35" [autoResizeWidth]=true [paging]="paging">
+    <gui-grid-column header="comment" field="comment" >
+      <ng-template let-value="item.comment" let-item="item" let-index="index">
+        <div style="text-wrap: auto;font-weight: bold;line-height: normal;">{{value}}</div>
+      </ng-template>
+    </gui-grid-column>
+    <gui-grid-column header="type" field="detail" width="150">
+      <ng-template let-value="item['detail']" let-item="item" let-index="index">
+        {{value}}
+      </ng-template>
+    </gui-grid-column>
+    <gui-grid-column header="eventtime" field="eventtime" width="200">
+      <ng-template let-value="item['eventtime']" let-item="item" let-index="index">
+        {{value}}
+      </ng-template>
+    </gui-grid-column>
+    <gui-grid-column header="Router" field="ip"  width="250">
+      <ng-template let-value="item['ip']" let-item="item" let-index="index">
+        {{item.name}} ({{value}})
+      </ng-template>
+    </gui-grid-column>
+  </gui-grid>
+  </c-modal-body>
+  <c-modal-footer>
+    <button [cModalToggle]="DhcpHistoryModal.id" cButton color="secondary">
+      Close
+    </button>
+  </c-modal-footer>
+</c-modal>

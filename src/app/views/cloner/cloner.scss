@@ -1,0 +1,133 @@
+
+.nav-underline {
+    border-bottom: 2px solid var(--cui-nav-underline-border-color, #c4c9d0)
+}
+
+.nav-underline .nav-item {
+    margin-bottom: -2px;
+    cursor: pointer;
+}
+
+.nav-underline .nav-link {
+    color: var(--cui-nav-underline-link-color, #768192);
+    border-style: none none solid!important;
+    border-width:2px;
+    position:relative;
+    bottom:-1px;
+    cursor: pointer;
+
+}
+
+.nav-underline .nav-link:hover,.nav-underline .nav-link:focus {
+    border-color: var(--cui-nav-underline-link-active-border-color, #321fdb)
+}
+
+.nav-underline .nav-link.active,.nav-underline .show>.nav-link {
+    color: var(--cui-nav-underline-link-active-color, #321fdb);
+    background: transparent;
+    border-color: var(--cui-nav-underline-link-active-border-color, #321fdb)
+}
+
+
+
+
+
+
+.custom-control-label::before, .custom-control-label::after {
+    top: 0.1rem;
+    width: 2rem;
+    height: 1rem;
+  }
+  
+  .custom-control-input:checked ~ .custom-control-label::before {
+    color: #fff;
+    border-color: #3498db;
+    background-color: #3498db;
+  }
+  
+  .custom-control-input:focus ~ .custom-control-label::before {
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+  }
+  
+  h5.cloner-sections {
+    color: #3498db;
+    margin-bottom: 5px;
+    font-size: 15px;
+    font-weight: 600;  }
+  
+  .nav-link {
+    color: #333;
+  }
+  
+  .nav-link.active {
+    color: #3498db;
+    border-bottom: 2px solid #3498db;
+  }
+
+  .command-sections  c-card-body{
+    display: flex!important;
+    justify-content: space-between!important;
+    padding:5px!important;
+    align-items: center!important;
+    justify-content: space-between!important;
+    border-radius: 4px;
+}
+
+.command-sections  c-card-body h6{
+    margin: 0!important;
+    font-size: 12px!important;
+    color: var(--primary-color);
+    white-space: nowrap!important;
+    overflow: hidden!important;
+    text-overflow: ellipsis!important;
+    width: 80%!important;
+        font-weight: bold;
+
+}
+.command-sections  c-card{
+    border: 1px solid #e0e0e0!important;;
+    border-radius: 4px!important;;
+}
+
+    /* Checkbox Styling */
+    .custom-switch {
+        position: relative;
+        width: 40px;
+        height: 20px;
+      }
+      
+      .custom-switch input {
+        display: none;
+      }
+      
+      .custom-control-label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 20px;
+        background: #ccc;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      
+      .custom-control-label::after {
+        content: '';
+        position: absolute;
+        left: 2px;
+        top: 2px;
+        width: 16px;
+        height: 16px;
+        background: #fff;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+      }
+      
+      .custom-switch input:checked + .custom-control-label {
+        background: #3498db;
+      }
+      
+      .custom-switch input:checked + .custom-control-label::after {
+        left: calc(100% - 18px);
+      }

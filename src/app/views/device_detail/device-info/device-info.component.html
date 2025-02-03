@@ -1,0 +1,40 @@
+
+<c-row>
+  <c-col xs>
+    <c-card class="mb-1" style="border: none;">
+      <c-card-body style="padding: 0;">
+        <c-row style="flex-direction:row">
+        <c-input-group class="mr-0 ml-0 mb-1" *ngIf="!devdata['online']"
+          style="padding-right:unset;width: auto;flex: 1 1 auto;flex-flow:  nowrap;flex: unset;">
+          <span
+            style="padding: 0.175rem 0.35rem;background-color:#ed4646;text-transform: capitalize;color:#fff;font-size:0.75rem;border: none;font-weight: bold;"
+            cInputGroupText>Device offline or not accessible for MikroWizard</span>
+        </c-input-group>
+        <c-input-group class="mr-0 ml-0 mb-1" *ngIf="devdata['update_availble']"
+          style="padding-right:unset;width: auto;flex: 1 1 auto;flex-flow:  nowrap;flex: unset;">
+          <span
+            style="padding: 0.175rem 0.35rem;background-color:#ed4646;text-transform: capitalize;color:#fff;font-size:0.75rem;border: none;"
+            cInputGroupText>Firmware Upgrade Detected</span>
+        </c-input-group>
+        <c-input-group class="mr-0 ml-0 mb-1" *ngIf="devdata['upgrade_availble']"
+        style="padding-right:unset;width: auto;flex: 1 1 auto;flex-flow:  nowrap;flex: unset;">
+        <span
+          style="padding: 0.175rem 0.35rem;background-color:#edd446;text-transform: capitalize;color:#fff;font-size:0.75rem;border: none;"
+          cInputGroupText>Firmware Upgrade Detected</span>
+        </c-input-group>
+          <ng-container *ngFor="let item of devdata | keyvalue; index as i">
+            <c-input-group *ngIf="checkitem(item)" class="mr-0 ml-0 mb-1"
+              style="padding-right:unset;width: auto;flex: 1 1 auto;flex-flow:  nowrap;flex: unset;">
+              <span
+                style="padding: 0.175rem 0.35rem;background-color:#4f5d73;text-transform: capitalize;color:#fff;font-size:0.7rem"
+                cInputGroupText>{{item.key}}</span>
+              <span _ngcontent-ng-c666080582="" cinputgrouptext=""
+                style="padding: 0.175rem 0.35rem;color: rgba(44, 56, 74, 0.95);font-size: 0.7rem;background-color: #d8dbe0;border-color: #b1b7c1;"
+                class="input-group-text">{{ item.value }}</span>
+            </c-input-group>
+          </ng-container>
+        </c-row>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

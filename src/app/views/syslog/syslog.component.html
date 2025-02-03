@@ -3,8 +3,11 @@
     <c-card class="mb-4">
       <c-card-header>
         <c-row>
-          <c-col xs [lg]="11">
-            Devices
+          <c-col xs [lg]="11" style="display: flex;flex-direction: column;align-items: flex-start;">
+            <h5>Devices</h5>
+            <c-alert color="warning" style="padding-top: 5px!important;font-size: 0.8rem;display: inline-block;" *ngIf="!filters['start_time'] && !filters['end_time']">
+              <i class="fa-solid fa-triangle-exclamation mx-1"></i>Showing <strong>last 24 hours logs</strong> by default. Use filters to modify the date and time.
+            </c-alert>
           </c-col>
           <c-col xs [lg]="1">
             <button (click)="toggleCollapse()" cButton class="me-1" color="primary"><i
